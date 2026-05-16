@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "truspilot-review/reviews",
+	"title": "Truspilot Reviews",
+	"category": "widgets",
+	"icon": "star-filled",
+	"description": "Display Trustpilot reviews as a responsive carousel, grid, or review wall.",
+	"textdomain": "truspilot-review",
+	"attributes": {
+		"title": {
+			"type": "string",
+			"default": "Customer reviews"
+		},
+		"count": {
+			"type": "number",
+			"default": 3
+		},
+		"layout": {
+			"type": "string",
+			"default": "carousel"
+		},
+		"autoplay": {
+			"type": "boolean",
+			"default": true
+		},
+		"interval": {
+			"type": "number",
+			"default": 5500
+		},
+		"fullPage": {
+			"type": "boolean",
+			"default": false
+		},
+		"minRating": {
+			"type": "number",
+			"default": 1
+		},
+		"featuredFirst": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"editorScript": "truspilot-review-block",
+	"style": "truspilot-review-frontend"
+}
