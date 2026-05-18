@@ -7,6 +7,7 @@ A lightweight WordPress plugin for displaying locally saved Trustpilot-style rev
 - Local `Truspilot Review` custom post type for safe review storage.
 - Business profile settings for TrustScore, rating label, profile URL, and review count.
 - Paste importer for copied public-profile review text or JSON arrays.
+- Optional public-profile scraper that paginates Trustpilot pages and saves discovered reviews locally.
 - Shortcode aliases: `[truspilot_reviews]` and `[trustpilot_reviews]`.
 - Dynamic Gutenberg block with the same display controls.
 - Auto-rotating carousel with pause on hover/focus and reduced-motion support.
@@ -18,8 +19,14 @@ A lightweight WordPress plugin for displaying locally saved Trustpilot-style rev
 
 1. Go to **Truspilot Reviews > Settings & Import**.
 2. Save the business profile summary from the public Trustpilot profile.
-3. Paste copied reviews into the importer or add reviews manually under **Truspilot Reviews > Add Review**.
+3. Use **Automatic Public Scrape**, paste copied reviews into the importer, or add reviews manually under **Truspilot Reviews > Add Review**.
 4. Place a shortcode or block on any page.
+
+## Automatic Scrape
+
+The scraper follows the same public-page approach used by open-source projects such as `irfanalidv/trustpilot_scraper`: it requests `?page=1`, `?page=2`, and so on, reads Trustpilot's public `__NEXT_DATA__` or JSON-LD payload, normalizes reviews, deduplicates them, and saves them as local WordPress reviews.
+
+This is intentionally an admin-only manual action. Trustpilot may still return browser verification to some servers, in which case the plugin shows a clear admin error and leaves the frontend untouched.
 
 ## Import Format
 

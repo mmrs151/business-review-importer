@@ -51,6 +51,7 @@ final class Truspilot_Review_Plugin {
 		add_action( 'add_meta_boxes', array( $this, 'add_review_meta_boxes' ) );
 		add_action( 'save_post_' . self::POST_TYPE, array( $this, 'save_review_meta' ), 10, 2 );
 		add_action( 'admin_post_truspilot_import_reviews', array( $this, 'handle_import_reviews' ) );
+		add_action( 'admin_post_truspilot_scrape_reviews', array( $this, 'handle_scrape_reviews' ) );
 		add_filter( 'manage_' . self::POST_TYPE . '_posts_columns', array( $this, 'review_columns' ) );
 		add_action( 'manage_' . self::POST_TYPE . '_posts_custom_column', array( $this, 'render_review_column' ), 10, 2 );
 	}
@@ -202,12 +203,25 @@ final class Truspilot_Review_Plugin {
 		}
 
 		$imported = isset( $_GET['truspilot_imported'] ) ? absint( $_GET['truspilot_imported'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$scraped  = isset( $_GET['truspilot_scraped'] ) ? absint( $_GET['truspilot_scraped'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$error    = isset( $_GET['truspilot_error'] ) ? sanitize_key( wp_unslash( $_GET['truspilot_error'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$settings = $this->get_settings();
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html__( 'Truspilot Review Blocks', 'truspilot-review' ); ?></h1>
 			<?php if ( null !== $imported ) : ?>
 				<div class="notice notice-success is-dismissible">
 					<p><?php echo esc_html( sprintf( _n( '%d review imported.', '%d reviews imported.', $imported, 'truspilot-review' ), $imported ) ); ?></p>
+				</div>
+			<?php endif; ?>
+			<?php if ( null !== $scraped ) : ?>
+				<div class="notice notice-success is-dismissible">
+					<p><?php echo esc_html( sprintf( _n( '%d review scraped and saved locally.', '%d reviews scraped and saved locally.', $scraped, 'truspilot-review' ), $scraped ) ); ?></p>
+				</div>
+			<?php endif; ?>
+			<?php if ( $error ) : ?>
+				<div class="notice notice-error is-dismissible">
+					<p><?php echo esc_html( $this->get_admin_error_message( $error ) ); ?></p>
 				</div>
 			<?php endif; ?>
 
@@ -217,6 +231,36 @@ final class Truspilot_Review_Plugin {
 				do_settings_sections( 'truspilot-review' );
 				submit_button();
 				?>
+			</form>
+
+			<hr />
+			<h2><?php echo esc_html__( 'Automatic Public Scrape', 'truspilot-review' ); ?></h2>
+			<p><?php echo esc_html__( 'Optionally scrape reviews from the saved public Trustpilot profile URL and save them locally. This follows the public-page pagination approach used by open-source Trustpilot scrapers, but Trustpilot may block server requests with browser verification.', 'truspilot-review' ); ?></p>
+			<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+				<input type="hidden" name="action" value="truspilot_scrape_reviews" />
+				<?php wp_nonce_field( 'truspilot_scrape_reviews', 'truspilot_scrape_nonce' ); ?>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th><label for="truspilot_scrape_url"><?php echo esc_html__( 'Profile URL', 'truspilot-review' ); ?></label></th>
+						<td>
+							<input type="url" class="regular-text" id="truspilot_scrape_url" name="truspilot_scrape_url" value="<?php echo esc_attr( $settings['public_url'] ); ?>" placeholder="https://uk.trustpilot.com/review/example.com" required />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="truspilot_scrape_pages"><?php echo esc_html__( 'Maximum pages', 'truspilot-review' ); ?></label></th>
+						<td>
+							<input type="number" id="truspilot_scrape_pages" name="truspilot_scrape_pages" min="1" max="50" value="5" />
+							<p class="description"><?php echo esc_html__( 'Each page is fetched with a short delay. Keep this modest to avoid aggressive requests.', 'truspilot-review' ); ?></p>
+						</td>
+					</tr>
+				</table>
+				<p>
+					<label>
+						<input type="checkbox" name="truspilot_clear_existing" value="1" />
+						<?php echo esc_html__( 'Move existing local reviews to trash before scraping', 'truspilot-review' ); ?>
+					</label>
+				</p>
+				<?php submit_button( __( 'Scrape & Save Reviews', 'truspilot-review' ), 'secondary' ); ?>
 			</form>
 
 			<hr />
@@ -426,6 +470,279 @@ final class Truspilot_Review_Plugin {
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Handle public Trustpilot scrape import.
+	 */
+	public function handle_scrape_reviews() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to scrape reviews.', 'truspilot-review' ) );
+		}
+
+		if ( ! isset( $_POST['truspilot_scrape_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['truspilot_scrape_nonce'] ) ), 'truspilot_scrape_reviews' ) ) {
+			wp_die( esc_html__( 'Scrape security check failed.', 'truspilot-review' ) );
+		}
+
+		$url       = isset( $_POST['truspilot_scrape_url'] ) ? esc_url_raw( wp_unslash( $_POST['truspilot_scrape_url'] ) ) : '';
+		$max_pages = isset( $_POST['truspilot_scrape_pages'] ) ? min( 50, max( 1, absint( $_POST['truspilot_scrape_pages'] ) ) ) : 5;
+
+		if ( ! $url || ! $this->is_allowed_trustpilot_url( $url ) ) {
+			$this->redirect_to_settings( array( 'truspilot_error' => 'invalid_url' ) );
+		}
+
+		if ( ! empty( $_POST['truspilot_clear_existing'] ) ) {
+			$this->trash_existing_reviews();
+		}
+
+		$result   = $this->scrape_public_reviews( $url, $max_pages );
+		$imported = 0;
+
+		foreach ( $result['reviews'] as $review ) {
+			if ( $this->insert_imported_review( $review ) ) {
+				$imported++;
+			}
+		}
+
+		if ( 0 === $imported && ! empty( $result['error'] ) ) {
+			$this->redirect_to_settings( array( 'truspilot_error' => $result['error'] ) );
+		}
+
+		$this->redirect_to_settings( array( 'truspilot_scraped' => $imported ) );
+	}
+
+	/**
+	 * Scrape public Trustpilot pages and normalize reviews.
+	 *
+	 * @param string $base_url Trustpilot profile URL.
+	 * @param int    $max_pages Maximum pages.
+	 * @return array
+	 */
+	private function scrape_public_reviews( $base_url, $max_pages ) {
+		$reviews = array();
+		$seen    = array();
+
+		for ( $page = 1; $page <= $max_pages; $page++ ) {
+			$url      = add_query_arg( 'page', $page, $base_url );
+			$response = wp_safe_remote_get(
+				$url,
+				array(
+					'timeout'     => 20,
+					'redirection' => 3,
+					'user-agent'  => 'Mozilla/5.0 (compatible; TruspilotReviewBlocks/' . TRUSPILOT_REVIEW_VERSION . '; ' . home_url( '/' ) . ')',
+					'headers'     => array(
+						'Accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+						'Accept-Language' => 'en-US,en;q=0.9',
+					),
+				)
+			);
+
+			if ( is_wp_error( $response ) ) {
+				return array(
+					'reviews' => $reviews,
+					'error'   => 'request_failed',
+				);
+			}
+
+			$code = wp_remote_retrieve_response_code( $response );
+			$body = wp_remote_retrieve_body( $response );
+
+			if ( 200 !== $code ) {
+				return array(
+					'reviews' => $reviews,
+					'error'   => false !== stripos( $body, 'Verifying your connection' ) ? 'trustpilot_blocked' : 'http_error',
+				);
+			}
+
+			if ( false !== stripos( $body, 'Verifying your connection' ) ) {
+				return array(
+					'reviews' => $reviews,
+					'error'   => 'trustpilot_blocked',
+				);
+			}
+
+			$page_reviews = $this->parse_public_reviews_html( $body );
+
+			if ( empty( $page_reviews ) ) {
+				break;
+			}
+
+			foreach ( $page_reviews as $review ) {
+				$hash = md5( strtolower( wp_strip_all_tags( $review['body'] ) ) );
+				if ( isset( $seen[ $hash ] ) ) {
+					continue;
+				}
+				$seen[ $hash ] = true;
+				$reviews[]     = $review;
+			}
+
+			if ( $page < $max_pages ) {
+				sleep( 1 );
+			}
+		}
+
+		return array(
+			'reviews' => $reviews,
+			'error'   => empty( $reviews ) ? 'no_reviews' : '',
+		);
+	}
+
+	/**
+	 * Parse public Trustpilot HTML.
+	 *
+	 * @param string $html HTML.
+	 * @return array
+	 */
+	private function parse_public_reviews_html( $html ) {
+		if ( ! is_string( $html ) || '' === $html ) {
+			return array();
+		}
+
+		$reviews = array();
+
+		if ( preg_match( '#<script[^>]+id=["\']__NEXT_DATA__["\'][^>]*>(.*?)</script>#is', $html, $match ) ) {
+			$decoded = json_decode( html_entity_decode( trim( $match[1] ), ENT_QUOTES, 'UTF-8' ), true );
+			if ( is_array( $decoded ) ) {
+				$reviews = $this->collect_next_data_reviews( $decoded );
+			}
+		}
+
+		if ( ! empty( $reviews ) ) {
+			return $reviews;
+		}
+
+		if ( preg_match_all( '#<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>#is', $html, $matches ) ) {
+			foreach ( $matches[1] as $json ) {
+				$decoded = json_decode( html_entity_decode( trim( $json ), ENT_QUOTES, 'UTF-8' ), true );
+				if ( is_array( $decoded ) ) {
+					$reviews = array_merge( $reviews, $this->collect_schema_reviews( $decoded ) );
+				}
+			}
+		}
+
+		return $reviews;
+	}
+
+	/**
+	 * Collect reviews from Trustpilot Next.js payload.
+	 *
+	 * @param array $node Payload node.
+	 * @return array
+	 */
+	private function collect_next_data_reviews( array $node ) {
+		$stack   = array( $node );
+		$reviews = array();
+
+		while ( $stack ) {
+			$current = array_pop( $stack );
+
+			if ( ! is_array( $current ) ) {
+				continue;
+			}
+
+			if ( isset( $current['text'], $current['rating'] ) || isset( $current['content'], $current['rating'] ) ) {
+				$review = $this->normalize_scraped_review(
+					array(
+						'title'   => isset( $current['title'] ) ? $current['title'] : '',
+						'body'    => isset( $current['text'] ) ? $current['text'] : $current['content'],
+						'author'  => isset( $current['consumer']['displayName'] ) ? $current['consumer']['displayName'] : '',
+						'rating'  => $current['rating'],
+						'date'    => isset( $current['dates']['publishedDate'] ) ? $current['dates']['publishedDate'] : '',
+						'country' => isset( $current['consumer']['countryCode'] ) ? $current['consumer']['countryCode'] : '',
+					)
+				);
+
+				if ( $review ) {
+					$reviews[] = $review;
+				}
+			}
+
+			foreach ( $current as $value ) {
+				if ( is_array( $value ) ) {
+					$stack[] = $value;
+				}
+			}
+		}
+
+		return $reviews;
+	}
+
+	/**
+	 * Collect reviews from schema.org JSON-LD.
+	 *
+	 * @param array $node Schema node.
+	 * @return array
+	 */
+	private function collect_schema_reviews( array $node ) {
+		$reviews = array();
+
+		if ( isset( $node['@graph'] ) && is_array( $node['@graph'] ) ) {
+			foreach ( $node['@graph'] as $graph_node ) {
+				if ( is_array( $graph_node ) ) {
+					$reviews = array_merge( $reviews, $this->collect_schema_reviews( $graph_node ) );
+				}
+			}
+		}
+
+		if ( isset( $node['review'] ) && is_array( $node['review'] ) ) {
+			foreach ( $node['review'] as $review_node ) {
+				if ( is_array( $review_node ) ) {
+					$reviews = array_merge( $reviews, $this->collect_schema_reviews( $review_node ) );
+				}
+			}
+		}
+
+		$type = isset( $node['@type'] ) ? $node['@type'] : '';
+		$type = is_array( $type ) ? implode( ' ', array_map( 'strval', $type ) ) : (string) $type;
+
+		if ( false !== stripos( $type, 'Review' ) ) {
+			$review = $this->normalize_scraped_review(
+				array(
+					'title'  => isset( $node['name'] ) ? $node['name'] : '',
+					'body'   => isset( $node['reviewBody'] ) ? $node['reviewBody'] : ( isset( $node['description'] ) ? $node['description'] : '' ),
+					'author' => isset( $node['author']['name'] ) ? $node['author']['name'] : '',
+					'rating' => isset( $node['reviewRating']['ratingValue'] ) ? $node['reviewRating']['ratingValue'] : 5,
+					'date'   => isset( $node['datePublished'] ) ? $node['datePublished'] : '',
+				)
+			);
+
+			if ( $review ) {
+				$reviews[] = $review;
+			}
+		}
+
+		return $reviews;
+	}
+
+	/**
+	 * Normalize a scraped review.
+	 *
+	 * @param array $review Raw scraped review.
+	 * @return array|null
+	 */
+	private function normalize_scraped_review( array $review ) {
+		$body = isset( $review['body'] ) ? trim( wp_strip_all_tags( (string) $review['body'] ) ) : '';
+
+		if ( '' === $body ) {
+			return null;
+		}
+
+		$date = isset( $review['date'] ) ? sanitize_text_field( $review['date'] ) : '';
+		if ( $date && strtotime( $date ) ) {
+			$date = gmdate( 'Y-m-d', strtotime( $date ) );
+		}
+
+		return array(
+			'title'      => isset( $review['title'] ) ? sanitize_text_field( $review['title'] ) : '',
+			'body'       => sanitize_textarea_field( $body ),
+			'author'     => isset( $review['author'] ) ? sanitize_text_field( $review['author'] ) : '',
+			'rating'     => isset( $review['rating'] ) ? min( 5, max( 1, (float) $review['rating'] ) ) : 5,
+			'date'       => $date,
+			'source_url' => '',
+			'country'    => isset( $review['country'] ) ? sanitize_text_field( $review['country'] ) : '',
+			'verified'   => true,
+			'featured'   => false,
+		);
 	}
 
 	/**
@@ -785,6 +1102,22 @@ final class Truspilot_Review_Plugin {
 			return false;
 		}
 
+		$hash = md5( strtolower( $body ) );
+		$dupe = get_posts(
+			array(
+				'post_type'      => self::POST_TYPE,
+				'post_status'    => array( 'publish', 'draft', 'pending', 'private' ),
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'meta_key'       => '_truspilot_import_hash',
+				'meta_value'     => $hash,
+			)
+		);
+
+		if ( ! empty( $dupe ) ) {
+			return false;
+		}
+
 		$post_id = wp_insert_post(
 			array(
 				'post_type'    => self::POST_TYPE,
@@ -808,7 +1141,7 @@ final class Truspilot_Review_Plugin {
 			'_truspilot_short_excerpt' => '',
 			'_truspilot_featured'      => ! empty( $review['featured'] ) ? 1 : 0,
 			'_truspilot_verified'      => ! empty( $review['verified'] ) ? 1 : 0,
-			'_truspilot_import_hash'   => md5( strtolower( wp_strip_all_tags( $body ) ) ),
+			'_truspilot_import_hash'   => $hash,
 		);
 
 		foreach ( $meta as $key => $value ) {
@@ -870,6 +1203,45 @@ final class Truspilot_Review_Plugin {
 		if ( 'truspilot_featured' === $column ) {
 			echo esc_html( $meta['featured'] ? __( 'Yes', 'truspilot-review' ) : __( 'No', 'truspilot-review' ) );
 		}
+	}
+
+	/**
+	 * Redirect back to settings.
+	 *
+	 * @param array $args Query args.
+	 */
+	private function redirect_to_settings( array $args ) {
+		wp_safe_redirect(
+			add_query_arg(
+				array_merge(
+					array(
+						'post_type' => self::POST_TYPE,
+						'page'      => 'truspilot-review',
+					),
+					$args
+				),
+				admin_url( 'edit.php' )
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Get readable admin error.
+	 *
+	 * @param string $code Error code.
+	 * @return string
+	 */
+	private function get_admin_error_message( $code ) {
+		$messages = array(
+			'invalid_url'        => __( 'Please enter a valid public Trustpilot profile URL.', 'truspilot-review' ),
+			'request_failed'     => __( 'The scrape request failed before Trustpilot returned a page.', 'truspilot-review' ),
+			'trustpilot_blocked' => __( 'Trustpilot returned a browser verification page, so no reviews could be scraped from this server.', 'truspilot-review' ),
+			'http_error'         => __( 'Trustpilot returned an HTTP error while scraping reviews.', 'truspilot-review' ),
+			'no_reviews'         => __( 'No reviews were found in the public page data.', 'truspilot-review' ),
+		);
+
+		return isset( $messages[ $code ] ) ? $messages[ $code ] : __( 'Reviews could not be scraped.', 'truspilot-review' );
 	}
 
 	/**
