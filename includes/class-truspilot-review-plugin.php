@@ -264,19 +264,24 @@ final class Truspilot_Review_Plugin {
 			</form>
 
 			<hr />
-			<h2><?php echo esc_html__( 'Paste Import', 'truspilot-review' ); ?></h2>
-			<p><?php echo esc_html__( 'Paste reviews copied from a public profile, one review per blank-line-separated block. JSON arrays are also supported.', 'truspilot-review' ); ?></p>
+			<h2><?php echo esc_html__( 'Easy Browser Import', 'truspilot-review' ); ?></h2>
+			<p><?php echo esc_html__( 'Open the Trustpilot profile in your browser, view the page source, copy all, and paste it here. The plugin will extract reviews from the public page data and save them locally.', 'truspilot-review' ); ?></p>
+			<ol>
+				<li><?php echo esc_html__( 'Open the Trustpilot review profile while logged into your normal browser session.', 'truspilot-review' ); ?></li>
+				<li><?php echo esc_html__( 'Use View Page Source, then select all and copy.', 'truspilot-review' ); ?></li>
+				<li><?php echo esc_html__( 'Paste the source below and import. Plain review text and JSON arrays still work too.', 'truspilot-review' ); ?></li>
+			</ol>
 			<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
 				<input type="hidden" name="action" value="truspilot_import_reviews" />
 				<?php wp_nonce_field( 'truspilot_import_reviews', 'truspilot_import_nonce' ); ?>
-				<textarea name="truspilot_import_text" rows="12" class="large-text code" placeholder="<?php echo esc_attr__( "5 stars\nExcellent service\nThe team was fast, friendly, and helpful.\nJane Smith\n12 May 2026", 'truspilot-review' ); ?>"></textarea>
+				<textarea name="truspilot_import_text" rows="14" class="large-text code" placeholder="<?php echo esc_attr__( 'Paste full Trustpilot page source, a JSON review array, or copied review text here.', 'truspilot-review' ); ?>"></textarea>
 				<p>
 					<label>
 						<input type="checkbox" name="truspilot_clear_existing" value="1" />
 						<?php echo esc_html__( 'Move existing local reviews to trash before importing', 'truspilot-review' ); ?>
 					</label>
 				</p>
-				<?php submit_button( __( 'Import Reviews', 'truspilot-review' ) ); ?>
+				<?php submit_button( __( 'Extract & Import Reviews', 'truspilot-review' ) ); ?>
 			</form>
 
 			<h2><?php echo esc_html__( 'Shortcodes', 'truspilot-review' ); ?></h2>
@@ -974,6 +979,10 @@ final class Truspilot_Review_Plugin {
 			return array();
 		}
 
+		if ( $this->looks_like_html( $raw ) ) {
+			return $this->parse_public_reviews_html( $raw );
+		}
+
 		$json = json_decode( $raw, true );
 		if ( is_array( $json ) ) {
 			return $this->normalize_import_array( $json );
@@ -990,6 +999,19 @@ final class Truspilot_Review_Plugin {
 		}
 
 		return $reviews;
+	}
+
+	/**
+	 * Detect full or partial HTML imports.
+	 *
+	 * @param string $raw Raw import text.
+	 * @return bool
+	 */
+	private function looks_like_html( $raw ) {
+		return false !== stripos( $raw, '<html' )
+			|| false !== stripos( $raw, '<script' )
+			|| false !== stripos( $raw, '__NEXT_DATA__' )
+			|| false !== stripos( $raw, 'application/ld+json' );
 	}
 
 	/**
