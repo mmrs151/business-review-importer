@@ -19,6 +19,20 @@ final class Truspilot_Review_Plugin {
 	const DEFAULT_COUNT = 3;
 
 	/**
+	 * HTML parser instance.
+	 *
+	 * @var Truspilot_Review_Parser
+	 */
+	private $parser;
+
+	/**
+	 * Scraper instance.
+	 *
+	 * @var Truspilot_Review_Scraper
+	 */
+	private $scraper;
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var self|null
@@ -42,6 +56,8 @@ final class Truspilot_Review_Plugin {
 	 * Wire WordPress hooks.
 	 */
 	private function __construct() {
+		$this->parser  = new Truspilot_Review_Parser();
+		$this->scraper = new Truspilot_Review_Scraper( $this->parser );
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'init', array( $this, 'register_assets' ) );
 		add_action( 'init', array( $this, 'register_shortcodes' ) );
@@ -463,16 +479,16 @@ final class Truspilot_Review_Plugin {
 
 		foreach ( $reviews as $review ) {
 			if ( $this->insert_imported_review( $review ) ) {
-				$imported++;
+				++$imported;
 			}
 		}
 
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'post_type'           => self::POST_TYPE,
-					'page'                => 'truspilot-review',
-					'truspilot_imported'  => $imported,
+					'post_type'          => self::POST_TYPE,
+					'page'               => 'truspilot-review',
+					'truspilot_imported' => $imported,
 				),
 				admin_url( 'edit.php' )
 			)
@@ -503,12 +519,12 @@ final class Truspilot_Review_Plugin {
 			$this->trash_existing_reviews();
 		}
 
-		$result   = $this->scrape_public_reviews( $url, $max_pages );
+		$result   = $this->scraper->scrape( $url, $max_pages );
 		$imported = 0;
 
 		foreach ( $result['reviews'] as $review ) {
 			if ( $this->insert_imported_review( $review ) ) {
-				$imported++;
+				++$imported;
 			}
 		}
 
@@ -519,239 +535,7 @@ final class Truspilot_Review_Plugin {
 		$this->redirect_to_settings( array( 'truspilot_scraped' => $imported ) );
 	}
 
-	/**
-	 * Scrape public Trustpilot pages and normalize reviews.
-	 *
-	 * @param string $base_url Trustpilot profile URL.
-	 * @param int    $max_pages Maximum pages.
-	 * @return array
-	 */
-	private function scrape_public_reviews( $base_url, $max_pages ) {
-		$reviews = array();
-		$seen    = array();
 
-		for ( $page = 1; $page <= $max_pages; $page++ ) {
-			$url      = add_query_arg( 'page', $page, $base_url );
-			$response = wp_safe_remote_get(
-				$url,
-				array(
-					'timeout'     => 20,
-					'redirection' => 3,
-					'user-agent'  => 'Mozilla/5.0 (compatible; TruspilotReviewBlocks/' . TRUSPILOT_REVIEW_VERSION . '; ' . home_url( '/' ) . ')',
-					'headers'     => array(
-						'Accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-						'Accept-Language' => 'en-US,en;q=0.9',
-					),
-				)
-			);
-
-			if ( is_wp_error( $response ) ) {
-				return array(
-					'reviews' => $reviews,
-					'error'   => 'request_failed',
-				);
-			}
-
-			$code = wp_remote_retrieve_response_code( $response );
-			$body = wp_remote_retrieve_body( $response );
-
-			if ( 200 !== $code ) {
-				return array(
-					'reviews' => $reviews,
-					'error'   => false !== stripos( $body, 'Verifying your connection' ) ? 'trustpilot_blocked' : 'http_error',
-				);
-			}
-
-			if ( false !== stripos( $body, 'Verifying your connection' ) ) {
-				return array(
-					'reviews' => $reviews,
-					'error'   => 'trustpilot_blocked',
-				);
-			}
-
-			$page_reviews = $this->parse_public_reviews_html( $body );
-
-			if ( empty( $page_reviews ) ) {
-				break;
-			}
-
-			foreach ( $page_reviews as $review ) {
-				$hash = md5( strtolower( wp_strip_all_tags( $review['body'] ) ) );
-				if ( isset( $seen[ $hash ] ) ) {
-					continue;
-				}
-				$seen[ $hash ] = true;
-				$reviews[]     = $review;
-			}
-
-			if ( $page < $max_pages ) {
-				sleep( 1 );
-			}
-		}
-
-		return array(
-			'reviews' => $reviews,
-			'error'   => empty( $reviews ) ? 'no_reviews' : '',
-		);
-	}
-
-	/**
-	 * Parse public Trustpilot HTML.
-	 *
-	 * @param string $html HTML.
-	 * @return array
-	 */
-	private function parse_public_reviews_html( $html ) {
-		if ( ! is_string( $html ) || '' === $html ) {
-			return array();
-		}
-
-		$reviews = array();
-
-		if ( preg_match( '#<script[^>]+id=["\']__NEXT_DATA__["\'][^>]*>(.*?)</script>#is', $html, $match ) ) {
-			$decoded = json_decode( html_entity_decode( trim( $match[1] ), ENT_QUOTES, 'UTF-8' ), true );
-			if ( is_array( $decoded ) ) {
-				$reviews = $this->collect_next_data_reviews( $decoded );
-			}
-		}
-
-		if ( ! empty( $reviews ) ) {
-			return $reviews;
-		}
-
-		if ( preg_match_all( '#<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>#is', $html, $matches ) ) {
-			foreach ( $matches[1] as $json ) {
-				$decoded = json_decode( html_entity_decode( trim( $json ), ENT_QUOTES, 'UTF-8' ), true );
-				if ( is_array( $decoded ) ) {
-					$reviews = array_merge( $reviews, $this->collect_schema_reviews( $decoded ) );
-				}
-			}
-		}
-
-		return $reviews;
-	}
-
-	/**
-	 * Collect reviews from Trustpilot Next.js payload.
-	 *
-	 * @param array $node Payload node.
-	 * @return array
-	 */
-	private function collect_next_data_reviews( array $node ) {
-		$stack   = array( $node );
-		$reviews = array();
-
-		while ( $stack ) {
-			$current = array_pop( $stack );
-
-			if ( ! is_array( $current ) ) {
-				continue;
-			}
-
-			if ( isset( $current['text'], $current['rating'] ) || isset( $current['content'], $current['rating'] ) ) {
-				$review = $this->normalize_scraped_review(
-					array(
-						'title'   => isset( $current['title'] ) ? $current['title'] : '',
-						'body'    => isset( $current['text'] ) ? $current['text'] : $current['content'],
-						'author'  => isset( $current['consumer']['displayName'] ) ? $current['consumer']['displayName'] : '',
-						'rating'  => $current['rating'],
-						'date'    => isset( $current['dates']['publishedDate'] ) ? $current['dates']['publishedDate'] : '',
-						'country' => isset( $current['consumer']['countryCode'] ) ? $current['consumer']['countryCode'] : '',
-					)
-				);
-
-				if ( $review ) {
-					$reviews[] = $review;
-				}
-			}
-
-			foreach ( $current as $value ) {
-				if ( is_array( $value ) ) {
-					$stack[] = $value;
-				}
-			}
-		}
-
-		return $reviews;
-	}
-
-	/**
-	 * Collect reviews from schema.org JSON-LD.
-	 *
-	 * @param array $node Schema node.
-	 * @return array
-	 */
-	private function collect_schema_reviews( array $node ) {
-		$reviews = array();
-
-		if ( isset( $node['@graph'] ) && is_array( $node['@graph'] ) ) {
-			foreach ( $node['@graph'] as $graph_node ) {
-				if ( is_array( $graph_node ) ) {
-					$reviews = array_merge( $reviews, $this->collect_schema_reviews( $graph_node ) );
-				}
-			}
-		}
-
-		if ( isset( $node['review'] ) && is_array( $node['review'] ) ) {
-			foreach ( $node['review'] as $review_node ) {
-				if ( is_array( $review_node ) ) {
-					$reviews = array_merge( $reviews, $this->collect_schema_reviews( $review_node ) );
-				}
-			}
-		}
-
-		$type = isset( $node['@type'] ) ? $node['@type'] : '';
-		$type = is_array( $type ) ? implode( ' ', array_map( 'strval', $type ) ) : (string) $type;
-
-		if ( false !== stripos( $type, 'Review' ) ) {
-			$review = $this->normalize_scraped_review(
-				array(
-					'title'  => isset( $node['name'] ) ? $node['name'] : '',
-					'body'   => isset( $node['reviewBody'] ) ? $node['reviewBody'] : ( isset( $node['description'] ) ? $node['description'] : '' ),
-					'author' => isset( $node['author']['name'] ) ? $node['author']['name'] : '',
-					'rating' => isset( $node['reviewRating']['ratingValue'] ) ? $node['reviewRating']['ratingValue'] : 5,
-					'date'   => isset( $node['datePublished'] ) ? $node['datePublished'] : '',
-				)
-			);
-
-			if ( $review ) {
-				$reviews[] = $review;
-			}
-		}
-
-		return $reviews;
-	}
-
-	/**
-	 * Normalize a scraped review.
-	 *
-	 * @param array $review Raw scraped review.
-	 * @return array|null
-	 */
-	private function normalize_scraped_review( array $review ) {
-		$body = isset( $review['body'] ) ? trim( wp_strip_all_tags( (string) $review['body'] ) ) : '';
-
-		if ( '' === $body ) {
-			return null;
-		}
-
-		$date = isset( $review['date'] ) ? sanitize_text_field( $review['date'] ) : '';
-		if ( $date && strtotime( $date ) ) {
-			$date = gmdate( 'Y-m-d', strtotime( $date ) );
-		}
-
-		return array(
-			'title'      => isset( $review['title'] ) ? sanitize_text_field( $review['title'] ) : '',
-			'body'       => sanitize_textarea_field( $body ),
-			'author'     => isset( $review['author'] ) ? sanitize_text_field( $review['author'] ) : '',
-			'rating'     => isset( $review['rating'] ) ? min( 5, max( 1, (float) $review['rating'] ) ) : 5,
-			'date'       => $date,
-			'source_url' => '',
-			'country'    => isset( $review['country'] ) ? sanitize_text_field( $review['country'] ) : '',
-			'verified'   => true,
-			'featured'   => false,
-		);
-	}
 
 	/**
 	 * Render shortcode.
@@ -948,7 +732,14 @@ final class Truspilot_Review_Plugin {
 			'post_status'    => 'publish',
 			'posts_per_page' => $count,
 			'meta_query'     => $meta_query,
-			'orderby'        => $featured_first ? array( 'meta_value_num' => 'DESC', 'menu_order' => 'ASC', 'date' => 'DESC' ) : array( 'menu_order' => 'ASC', 'date' => 'DESC' ),
+			'orderby'        => $featured_first ? array(
+				'meta_value_num' => 'DESC',
+				'menu_order'     => 'ASC',
+				'date'           => 'DESC',
+			) : array(
+				'menu_order' => 'ASC',
+				'date'       => 'DESC',
+			),
 		);
 
 		if ( $featured_first ) {
@@ -1005,7 +796,7 @@ final class Truspilot_Review_Plugin {
 		}
 
 		if ( $this->looks_like_html( $raw ) ) {
-			return $this->parse_public_reviews_html( $raw );
+			return $this->parser->parse_public_reviews_html( $raw );
 		}
 
 		$json = json_decode( $raw, true );
@@ -1120,7 +911,7 @@ final class Truspilot_Review_Plugin {
 		$body   = implode( ' ', $lines );
 
 		if ( '' === trim( $body ) ) {
-			$body = $title;
+			$body  = $title;
 			$title = '';
 		}
 

@@ -20,6 +20,8 @@ define( 'TRUSPILOT_REVIEW_FILE', __FILE__ );
 define( 'TRUSPILOT_REVIEW_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TRUSPILOT_REVIEW_URL', plugin_dir_url( __FILE__ ) );
 
+require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-parser.php';
+require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-scraper.php';
 require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-plugin.php';
 
 add_action( 'plugins_loaded', array( 'Truspilot_Review_Plugin', 'instance' ) );
