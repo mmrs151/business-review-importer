@@ -184,19 +184,36 @@
 		var(--trp-bg);
 }
 
-/* wall standard: single column centered cards */
+/* wall standard: cards scattered all over the page */
 .truspilot-review--wall-standard .truspilot-review__track {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 1.5rem;
-	max-width: 680px;
-	margin: 0 auto;
+	flex-wrap: wrap;
+	gap: 1.2rem;
+	padding: 0.5rem;
+	justify-content: center;
+	align-items: flex-start;
 }
 
 .truspilot-review--wall-standard .truspilot-review__card {
-	width: 100%;
-	max-width: 600px;
+	width: 260px;
+	flex: 0 0 auto;
+}
+
+/* Organic staggered offsets for scattered-wall feel */
+.truspilot-review--wall-standard .truspilot-review__card:nth-child(odd) {
+	margin-top: 1.5rem;
+}
+
+.truspilot-review--wall-standard .truspilot-review__card:nth-child(3n+2) {
+	margin-top: 0.75rem;
+}
+
+.truspilot-review--wall-standard .truspilot-review__card:nth-child(4n+3) {
+	margin-top: 2.5rem;
+}
+
+.truspilot-review--wall-standard .truspilot-review__card:nth-child(5n+4) {
+	margin-top: 0.25rem;
 }
 
 /* wall noticeboard: post-it tiles */
@@ -456,6 +473,10 @@
 	.truspilot-review--wall-noticeboard .truspilot-review__card {
 		width: 200px;
 	}
+
+	.truspilot-review--wall-standard .truspilot-review__card {
+		width: 220px;
+	}
 }
 
 @media (max-width: 640px) {
@@ -491,8 +512,16 @@
 		min-height: 0;
 	}
 
-	.truspilot-review--wall-noticeboard .truspilot-review__card {
+	.truspilot-review--wall-noticeboard .truspilot-review__card,
+	.truspilot-review--wall-standard .truspilot-review__card {
 		width: 100%;
-		max-width: 280px;
+		max-width: 320px;
+	}
+
+	.truspilot-review--wall-standard .truspilot-review__card:nth-child(odd),
+	.truspilot-review--wall-standard .truspilot-review__card:nth-child(3n+2),
+	.truspilot-review--wall-standard .truspilot-review__card:nth-child(4n+3),
+	.truspilot-review--wall-standard .truspilot-review__card:nth-child(5n+4) {
+		margin-top: 0;
 	}
 }
