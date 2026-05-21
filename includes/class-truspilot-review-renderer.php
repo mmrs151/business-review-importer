@@ -107,6 +107,7 @@ final class Truspilot_Review_Renderer {
 		$grid_columns   = isset( $raw_atts['grid_columns'] ) ? min( 6, max( 1, absint( $raw_atts['grid_columns'] ) ) ) : 3;
 		$wall_style     = isset( $raw_atts['wall_style'] ) ? $this->sanitize_choice( $raw_atts['wall_style'], array( 'standard', 'noticeboard' ), 'standard' ) : 'standard';
 		$settings       = $this->plugin->get_settings();
+		$evaluate_url   = $this->get_evaluate_url( $settings );
 
 		$show_all_featured = ( 0 === $count && $featured_first );
 		$show_empty        = ( 0 === $count && ! $featured_first );
@@ -186,14 +187,22 @@ final class Truspilot_Review_Renderer {
 					<?php if ( $show_empty && 'grid' !== $layout ) : ?>
 						<article class="truspilot-review__card truspilot-review__card--empty">
 							<div class="truspilot-review__empty">
-								<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+								<?php if ( $evaluate_url ) : ?>
+									<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></a>
+								<?php else : ?>
+									<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+								<?php endif; ?>
 							</div>
 						</article>
 					<?php elseif ( $show_empty && 'grid' === $layout ) : ?>
 						<?php for ( $i = 0; $i < $grid_cells; $i++ ) : ?>
 							<article class="truspilot-review__card truspilot-review__card--empty">
 								<div class="truspilot-review__empty">
-									<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+									<?php if ( $evaluate_url ) : ?>
+										<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></a>
+									<?php else : ?>
+										<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+									<?php endif; ?>
 								</div>
 							</article>
 						<?php endfor; ?>
@@ -229,7 +238,11 @@ final class Truspilot_Review_Renderer {
 							<?php for ( $i = $review_count; $i < $grid_cells; $i++ ) : ?>
 								<article class="truspilot-review__card truspilot-review__card--empty">
 									<div class="truspilot-review__empty">
-										<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+										<?php if ( $evaluate_url ) : ?>
+											<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></a>
+										<?php else : ?>
+											<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+										<?php endif; ?>
 									</div>
 								</article>
 							<?php endfor; ?>
@@ -369,6 +382,20 @@ final class Truspilot_Review_Renderer {
 		}
 
 		return date_i18n( get_option( 'date_format' ), $timestamp );
+	}
+
+	/**
+	 * Get the Trustpilot evaluate URL from business domain.
+	 *
+	 * @param array $settings Plugin settings.
+	 * @return string
+	 */
+	private function get_evaluate_url( array $settings ) {
+		if ( ! empty( $settings['business_domain'] ) ) {
+			return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $settings['business_domain'] );
+		}
+
+		return '';
 	}
 
 	/**

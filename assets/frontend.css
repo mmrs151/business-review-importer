@@ -310,6 +310,19 @@
 	font-style: italic;
 }
 
+.truspilot-review__card--empty .truspilot-review__empty a {
+	color: var(--trp-green-dark);
+	font-size: 0.95rem;
+	font-weight: 700;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.truspilot-review__card--empty .truspilot-review__empty a:hover,
+.truspilot-review__card--empty .truspilot-review__empty a:focus {
+	color: #005f42;
+}
+
 .truspilot-review__card--empty .truspilot-review__empty p {
 	margin: 0;
 	font-size: 0.95rem;
