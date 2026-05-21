@@ -3,3 +3,5 @@
 *.zip
 node_modules/
 vendor/
+build/
+.phpunit.result.cache

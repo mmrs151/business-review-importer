@@ -147,13 +147,25 @@ final class Truspilot_Review_Plugin {
 			true
 		);
 
-		wp_register_script(
-			'truspilot-review-block',
-			TRUSPILOT_REVIEW_URL . 'block/index.js',
-			array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-block-editor', 'wp-server-side-render' ),
-			TRUSPILOT_REVIEW_VERSION,
-			true
-		);
+		$block_asset_file = TRUSPILOT_REVIEW_DIR . 'build/index.asset.php';
+		if ( file_exists( $block_asset_file ) ) {
+			$block_asset = require $block_asset_file;
+			wp_register_script(
+				'truspilot-review-block',
+				TRUSPILOT_REVIEW_URL . 'build/index.js',
+				$block_asset['dependencies'],
+				$block_asset['version'],
+				true
+			);
+		} else {
+			wp_register_script(
+				'truspilot-review-block',
+				TRUSPILOT_REVIEW_URL . 'block/index.js',
+				array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-block-editor', 'wp-server-side-render' ),
+				TRUSPILOT_REVIEW_VERSION,
+				true
+			);
+		}
 	}
 
 	/**

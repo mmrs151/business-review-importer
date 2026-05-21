@@ -1,0 +1,14 @@
+{
+	"name": "truspilot-review",
+	"version": "1.0.0",
+	"description": "Truspilot Review Blocks WordPress plugin",
+	"private": true,
+	"scripts": {
+		"build": "wp-scripts build",
+		"start": "wp-scripts start"
+	},
+	"devDependencies": {
+		"@babel/runtime": "^7.29.2",
+		"@wordpress/scripts": "^28.0"
+	}
+}
