@@ -112,6 +112,15 @@ final class Truspilot_Review_Admin {
 			'truspilot-review',
 			array( $this, 'render_admin_page' )
 		);
+
+		add_submenu_page(
+			'edit.php?post_type=' . self::POST_TYPE,
+			__( 'Shortcode Help', 'truspilot-review' ),
+			__( 'Shortcode Help', 'truspilot-review' ),
+			'edit_posts',
+			'truspilot-review-help',
+			array( $this, 'render_help_page' )
+		);
 	}
 
 	/**
@@ -209,6 +218,172 @@ final class Truspilot_Review_Admin {
 			<p><code>[truspilot_reviews count="12" layout="grid" min_rating="4" featured_first="true" grid_rows="3" grid_columns="4"]</code></p>
 			<p><code>[truspilot_reviews count="24" layout="list" full_page="true"]</code></p>
 			<p><code>[truspilot_reviews count="0" layout="wall" wall_style="noticeboard"]</code></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render help page with shortcode docs.
+	 */
+	public function render_help_page() {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_die( esc_html__( 'You do not have permission to view this page.', 'truspilot-review' ) );
+		}
+		?>
+		<div class="wrap">
+			<h1><?php echo esc_html__( 'Truspilot Review — Shortcode & Block Help', 'truspilot-review' ); ?></h1>
+
+			<h2><?php echo esc_html__( 'Shortcode', 'truspilot-review' ); ?></h2>
+			<p><code>[truspilot_reviews]</code></p>
+			<p><?php echo esc_html__( 'Place this shortcode on any page or post to display your locally managed reviews.', 'truspilot-review' ); ?></p>
+
+			<h2><?php echo esc_html__( 'Attributes', 'truspilot-review' ); ?></h2>
+			<table class="widefat fixed striped">
+				<thead>
+					<tr>
+						<th><?php echo esc_html__( 'Attribute', 'truspilot-review' ); ?></th>
+						<th><?php echo esc_html__( 'Default', 'truspilot-review' ); ?></th>
+						<th><?php echo esc_html__( 'Options', 'truspilot-review' ); ?></th>
+						<th><?php echo esc_html__( 'Description', 'truspilot-review' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><code>count</code></td>
+						<td><code>0</code></td>
+						<td><?php echo esc_html__( '0 – 48', 'truspilot-review' ); ?></td>
+						<td><?php echo esc_html__( 'Number of reviews to display. 0 shows all featured reviews.', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>layout</code></td>
+						<td><code>carousel</code></td>
+						<td><code>carousel</code>, <code>grid</code>, <code>list</code>, <code>wall</code></td>
+						<td><?php echo esc_html__( 'Display layout.', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>title</code></td>
+						<td><code>Customer reviews</code></td>
+						<td><?php echo esc_html__( 'Any text', 'truspilot-review' ); ?></td>
+						<td><?php echo esc_html__( 'Section heading.', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>autoplay</code></td>
+						<td><code>true</code></td>
+						<td><code>true</code>, <code>false</code></td>
+						<td><?php echo esc_html__( 'Auto-rotate carousel slides.', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>interval</code></td>
+						<td><code>5500</code></td>
+						<td><?php echo esc_html__( '2500 – 20000', 'truspilot-review' ); ?></td>
+						<td><?php echo esc_html__( 'Carousel rotation speed in milliseconds.', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>full_page</code></td>
+						<td><code>false</code></td>
+						<td><code>true</code>, <code>false</code></td>
+						<td><?php echo esc_html__( 'Expand the review section to full page width and height.', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>min_rating</code></td>
+						<td><code>1</code></td>
+						<td><?php echo esc_html__( '1 – 5', 'truspilot-review' ); ?></td>
+						<td><?php echo esc_html__( 'Minimum star rating to include (1 = all).', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>featured_first</code></td>
+						<td><code>true</code></td>
+						<td><code>true</code>, <code>false</code></td>
+						<td><?php echo esc_html__( 'Show featured reviews before standard reviews.', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>grid_rows</code></td>
+						<td><code>3</code></td>
+						<td><?php echo esc_html__( '1 – 6', 'truspilot-review' ); ?></td>
+						<td><?php echo esc_html__( 'Number of grid rows (grid layout only).', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>grid_columns</code></td>
+						<td><code>3</code></td>
+						<td><?php echo esc_html__( '1 – 6', 'truspilot-review' ); ?></td>
+						<td><?php echo esc_html__( 'Number of grid columns (grid layout only).', 'truspilot-review' ); ?></td>
+					</tr>
+					<tr>
+						<td><code>wall_style</code></td>
+						<td><code>standard</code></td>
+						<td><code>standard</code>, <code>noticeboard</code></td>
+						<td><?php echo esc_html__( 'Wall sub-style (wall layout only).', 'truspilot-review' ); ?></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h2><?php echo esc_html__( 'Layouts', 'truspilot-review' ); ?></h2>
+			<dl>
+				<dt><strong><?php echo esc_html__( 'Carousel', 'truspilot-review' ); ?></strong></dt>
+				<dd><?php echo esc_html__( 'Slideshow with previous/next buttons and dot navigation. Use with autoplay and interval for automatic rotation.', 'truspilot-review' ); ?></dd>
+
+				<dt><strong><?php echo esc_html__( 'Grid', 'truspilot-review' ); ?></strong></dt>
+				<dd><?php echo esc_html__( 'Cards arranged in a uniform grid. Set grid_rows and grid_columns to control the dimensions. Each card keeps a square aspect ratio. Empty cells display an "Add yours here" link.', 'truspilot-review' ); ?></dd>
+
+				<dt><strong><?php echo esc_html__( 'List', 'truspilot-review' ); ?></strong></dt>
+				<dd><?php echo esc_html__( 'A scrollable vertical list of all reviews. Featured reviews appear first by default.', 'truspilot-review' ); ?></dd>
+
+				<dt><strong><?php echo esc_html__( 'Wall', 'truspilot-review' ); ?></strong></dt>
+				<dd>
+					<?php echo esc_html__( 'Two styles:', 'truspilot-review' ); ?>
+					<ul style="list-style: disc; padding-left: 2rem;">
+						<li><strong><?php echo esc_html__( 'Standard', 'truspilot-review' ); ?></strong> — <?php echo esc_html__( 'Cards scattered across the page in a mood-board arrangement.', 'truspilot-review' ); ?></li>
+						<li><strong><?php echo esc_html__( 'Noticeboard', 'truspilot-review' ); ?></strong> — <?php echo esc_html__( 'Post-it style tiles with thumbtack pins and subtle rotations.', 'truspilot-review' ); ?></li>
+					</ul>
+				</dd>
+			</dl>
+
+			<h2><?php echo esc_html__( 'Examples', 'truspilot-review' ); ?></h2>
+			<table class="widefat fixed striped">
+				<thead>
+					<tr>
+						<th><?php echo esc_html__( 'Description', 'truspilot-review' ); ?></th>
+						<th><?php echo esc_html__( 'Shortcode', 'truspilot-review' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><?php echo esc_html__( 'Default carousel', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews]</code></td>
+					</tr>
+					<tr>
+						<td><?php echo esc_html__( 'Carousel with custom speed', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews count="5" layout="carousel" autoplay="true" interval="6000"]</code></td>
+					</tr>
+					<tr>
+						<td><?php echo esc_html__( 'Grid with sizing', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews count="12" layout="grid" grid_rows="3" grid_columns="4" min_rating="4"]</code></td>
+					</tr>
+					<tr>
+						<td><?php echo esc_html__( 'Scrollable list', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews count="24" layout="list" full_page="true"]</code></td>
+					</tr>
+					<tr>
+						<td><?php echo esc_html__( 'Wall — standard scattered', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews count="0" layout="wall" wall_style="standard"]</code></td>
+					</tr>
+					<tr>
+						<td><?php echo esc_html__( 'Wall — noticeboard post-its', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews count="0" layout="wall" wall_style="noticeboard"]</code></td>
+					</tr>
+					<tr>
+						<td><?php echo esc_html__( 'All featured reviews', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews count="0" featured_first="true"]</code></td>
+					</tr>
+					<tr>
+						<td><?php echo esc_html__( 'Full page wall', 'truspilot-review' ); ?></td>
+						<td><code>[truspilot_reviews count="0" layout="wall" full_page="true"]</code></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h2><?php echo esc_html__( 'Block (Gutenberg)', 'truspilot-review' ); ?></h2>
+			<p><?php echo esc_html__( 'Search for the "Truspilot Reviews" block in the block inserter. The block provides the same settings as the shortcode through the inspector panel on the right.', 'truspilot-review' ); ?></p>
 		</div>
 		<?php
 	}
