@@ -13,6 +13,7 @@ import ServerSideRender from '@wordpress/server-side-render';
 registerBlockType('truspilot-review/reviews', {
 	edit: (props) => {
 		const { attributes, setAttributes } = props;
+		const { layout } = attributes;
 
 		return createElement(
 			'div',
@@ -34,14 +35,15 @@ registerBlockType('truspilot-review/reviews', {
 						options: [
 							{ label: 'Carousel', value: 'carousel' },
 							{ label: 'Grid', value: 'grid' },
-							{ label: 'Full review wall', value: 'wall' },
+							{ label: 'List (masonry)', value: 'list' },
+							{ label: 'Wall (full page)', value: 'wall' },
 						],
 						onChange: (value) => setAttributes({ layout: value }),
 					}),
 					createElement(RangeControl, {
-						label: 'Reviews to show',
+						label: 'Reviews to show (0 = all featured)',
 						value: attributes.count,
-						min: 1,
+						min: 0,
 						max: 48,
 						onChange: (value) => setAttributes({ count: value }),
 					}),
@@ -54,23 +56,51 @@ registerBlockType('truspilot-review/reviews', {
 						onChange: (value) => setAttributes({ minRating: value }),
 					}),
 					createElement(ToggleControl, {
-						label: 'Auto rotate reviews',
-						checked: attributes.autoplay,
-						onChange: (value) => setAttributes({ autoplay: value }),
-					}),
-					createElement(RangeControl, {
-						label: 'Rotation speed',
-						value: attributes.interval,
-						min: 2500,
-						max: 20000,
-						step: 500,
-						onChange: (value) => setAttributes({ interval: value }),
-					}),
-					createElement(ToggleControl, {
 						label: 'Show featured reviews first',
 						checked: attributes.featuredFirst,
 						onChange: (value) => setAttributes({ featuredFirst: value }),
 					}),
+					'carousel' === layout &&
+						createElement(ToggleControl, {
+							label: 'Auto rotate reviews',
+							checked: attributes.autoplay,
+							onChange: (value) => setAttributes({ autoplay: value }),
+						}),
+					'carousel' === layout &&
+						createElement(RangeControl, {
+							label: 'Rotation speed (ms)',
+							value: attributes.interval,
+							min: 2500,
+							max: 20000,
+							step: 500,
+							onChange: (value) => setAttributes({ interval: value }),
+						}),
+					'grid' === layout &&
+						createElement(RangeControl, {
+							label: 'Grid rows',
+							value: attributes.gridRows,
+							min: 1,
+							max: 6,
+							onChange: (value) => setAttributes({ gridRows: value }),
+						}),
+					'grid' === layout &&
+						createElement(RangeControl, {
+							label: 'Grid columns',
+							value: attributes.gridColumns,
+							min: 1,
+							max: 6,
+							onChange: (value) => setAttributes({ gridColumns: value }),
+						}),
+					'wall' === layout &&
+						createElement(SelectControl, {
+							label: 'Wall style',
+							value: attributes.wallStyle,
+							options: [
+								{ label: 'Standard', value: 'standard' },
+								{ label: 'Noticeboard', value: 'noticeboard' },
+							],
+							onChange: (value) => setAttributes({ wallStyle: value }),
+						}),
 					createElement(ToggleControl, {
 						label: 'Cover full page width',
 						checked: attributes.fullPage,

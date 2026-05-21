@@ -39,6 +39,18 @@
 		"featuredFirst": {
 			"type": "boolean",
 			"default": true
+		},
+		"gridRows": {
+			"type": "number",
+			"default": 3
+		},
+		"gridColumns": {
+			"type": "number",
+			"default": 3
+		},
+		"wallStyle": {
+			"type": "string",
+			"default": "standard"
 		}
 	},
 	"editorScript": "truspilot-review-block",
