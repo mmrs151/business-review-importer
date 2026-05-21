@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Truspilot Review Blocks
  * Description: Display responsive Trustpilot reviews as a carousel, grid, or full-page review wall with a shortcode or block.
- * Version: 1.0.0
+ * Version: 2026.05.21
  * Author: Truspilot Review Blocks
  * Text Domain: truspilot-review
  * Requires at least: 6.0
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TRUSPILOT_REVIEW_VERSION', '1.0.0' );
+define( 'TRUSPILOT_REVIEW_VERSION', '2026.05.21' );
 define( 'TRUSPILOT_REVIEW_FILE', __FILE__ );
 define( 'TRUSPILOT_REVIEW_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TRUSPILOT_REVIEW_URL', plugin_dir_url( __FILE__ ) );
