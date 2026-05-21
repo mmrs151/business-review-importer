@@ -1,0 +1,25 @@
+{
+	"name": "truspilot-review/plugin",
+	"description": "Truspilot Review Blocks WordPress plugin",
+	"type": "wordpress-plugin",
+	"license": "proprietary",
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.6",
+		"wp-coding-standards/wpcs": "^3.0",
+		"php-stubs/wordpress-stubs": "^6.0",
+		"php-stubs/wp-cli-stubs": "^2.8"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"scripts": {
+		"test": "phpunit",
+		"phpcs": "phpcs --standard=phpcs.xml --extensions=php .",
+		"phpcbf": "phpcbf --standard=phpcs.xml --extensions=php ."
+	}
+}
