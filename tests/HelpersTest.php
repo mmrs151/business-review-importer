@@ -66,7 +66,7 @@ class HelpersTest extends TestCase {
 	public function sanitize_choice_returns_valid_value() {
 		$result = $this->call_private(
 			'sanitize_choice',
-			array( 'carousel', array( 'carousel', 'grid', 'wall' ), 'carousel' )
+			array( 'carousel', array( 'carousel', 'grid', 'list', 'wall' ), 'carousel' )
 		);
 		$this->assertSame( 'carousel', $result );
 	}
@@ -75,7 +75,7 @@ class HelpersTest extends TestCase {
 	public function sanitize_choice_returns_fallback_for_invalid_value() {
 		$result = $this->call_private(
 			'sanitize_choice',
-			array( 'invalid', array( 'carousel', 'grid', 'wall' ), 'grid' )
+			array( 'invalid', array( 'carousel', 'grid', 'list', 'wall' ), 'grid' )
 		);
 		$this->assertSame( 'grid', $result );
 	}
@@ -84,9 +84,45 @@ class HelpersTest extends TestCase {
 	public function sanitize_choice_sanitizes_key() {
 		$result = $this->call_private(
 			'sanitize_choice',
-			array( ' CAROUSEL! ', array( 'carousel' ), 'wall' )
+			array( ' CAROUSEL! ', array( 'carousel' ), 'list' )
+		);
+		$this->assertSame( 'list', $result );
+	}
+
+	/** @test */
+	public function sanitize_choice_accepts_list() {
+		$result = $this->call_private(
+			'sanitize_choice',
+			array( 'list', array( 'carousel', 'grid', 'list', 'wall' ), 'carousel' )
+		);
+		$this->assertSame( 'list', $result );
+	}
+
+	/** @test */
+	public function sanitize_choice_accepts_wall() {
+		$result = $this->call_private(
+			'sanitize_choice',
+			array( 'wall', array( 'carousel', 'grid', 'list', 'wall' ), 'carousel' )
 		);
 		$this->assertSame( 'wall', $result );
+	}
+
+	/** @test */
+	public function sanitize_choice_accepts_wall_style_standard() {
+		$result = $this->call_private(
+			'sanitize_choice',
+			array( 'standard', array( 'standard', 'noticeboard' ), 'standard' )
+		);
+		$this->assertSame( 'standard', $result );
+	}
+
+	/** @test */
+	public function sanitize_choice_accepts_wall_style_noticeboard() {
+		$result = $this->call_private(
+			'sanitize_choice',
+			array( 'noticeboard', array( 'standard', 'noticeboard' ), 'standard' )
+		);
+		$this->assertSame( 'noticeboard', $result );
 	}
 
 	/** @test */

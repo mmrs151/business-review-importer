@@ -16,7 +16,7 @@ final class Truspilot_Review_Renderer {
 
 	const POST_TYPE     = 'truspilot_review';
 	const MAX_REVIEWS   = 48;
-	const DEFAULT_COUNT = 3;
+	const DEFAULT_COUNT = 0;
 
 	/**
 	 * Plugin instance for accessing shared helpers.
@@ -51,6 +51,9 @@ final class Truspilot_Review_Renderer {
 				'title'          => __( 'Customer reviews', 'truspilot-review' ),
 				'min_rating'     => 1,
 				'featured_first' => 'true',
+				'grid_rows'      => 3,
+				'grid_columns'   => 3,
+				'wall_style'     => 'standard',
 			),
 			(array) $atts,
 			'truspilot_reviews'
@@ -78,6 +81,9 @@ final class Truspilot_Review_Renderer {
 				'title'          => isset( $attributes['title'] ) ? $attributes['title'] : __( 'Customer reviews', 'truspilot-review' ),
 				'min_rating'     => isset( $attributes['minRating'] ) ? $attributes['minRating'] : 1,
 				'featured_first' => ! empty( $attributes['featuredFirst'] ) ? 'true' : 'false',
+				'grid_rows'      => isset( $attributes['gridRows'] ) ? $attributes['gridRows'] : 3,
+				'grid_columns'   => isset( $attributes['gridColumns'] ) ? $attributes['gridColumns'] : 3,
+				'wall_style'     => isset( $attributes['wallStyle'] ) ? $attributes['wallStyle'] : 'standard',
 			)
 		);
 	}
@@ -89,20 +95,36 @@ final class Truspilot_Review_Renderer {
 	 * @return string
 	 */
 	private function render_reviews( $raw_atts ) {
-		$count          = min( self::MAX_REVIEWS, max( 1, absint( $raw_atts['count'] ) ) );
-		$layout         = $this->sanitize_choice( isset( $raw_atts['layout'] ) ? $raw_atts['layout'] : 'carousel', array( 'carousel', 'grid', 'wall' ), 'carousel' );
+		$count          = isset( $raw_atts['count'] ) && '' !== $raw_atts['count'] ? min( self::MAX_REVIEWS, max( -1, absint( $raw_atts['count'] ) ) ) : 0;
+		$layout         = $this->sanitize_choice( isset( $raw_atts['layout'] ) ? $raw_atts['layout'] : 'carousel', array( 'carousel', 'grid', 'list', 'wall' ), 'carousel' );
 		$autoplay       = $this->to_bool( isset( $raw_atts['autoplay'] ) ? $raw_atts['autoplay'] : 'true' );
 		$full_page      = $this->to_bool( isset( $raw_atts['full_page'] ) ? $raw_atts['full_page'] : 'false' );
 		$featured_first = $this->to_bool( isset( $raw_atts['featured_first'] ) ? $raw_atts['featured_first'] : 'true' );
 		$interval       = min( 20000, max( 2500, absint( $raw_atts['interval'] ) ) );
 		$min_rating     = min( 5, max( 1, (float) $raw_atts['min_rating'] ) );
 		$title          = isset( $raw_atts['title'] ) ? sanitize_text_field( wp_unslash( $raw_atts['title'] ) ) : '';
-		$data           = $this->get_local_reviews( $count, $min_rating, $featured_first );
+		$grid_rows      = isset( $raw_atts['grid_rows'] ) ? min( 6, max( 1, absint( $raw_atts['grid_rows'] ) ) ) : 3;
+		$grid_columns   = isset( $raw_atts['grid_columns'] ) ? min( 6, max( 1, absint( $raw_atts['grid_columns'] ) ) ) : 3;
+		$wall_style     = isset( $raw_atts['wall_style'] ) ? $this->sanitize_choice( $raw_atts['wall_style'], array( 'standard', 'noticeboard' ), 'standard' ) : 'standard';
 		$settings       = $this->plugin->get_settings();
 
-		if ( empty( $data['reviews'] ) ) {
+		$show_all_featured = ( 0 === $count && $featured_first );
+		$show_empty        = ( 0 === $count && ! $featured_first );
+
+		if ( $show_empty ) {
+			$reviews      = array();
+			$review_count = 0;
+		} else {
+			$data         = $this->get_local_reviews( $count, $min_rating, $featured_first, $show_all_featured );
+			$reviews      = $data['reviews'];
+			$review_count = count( $reviews );
+		}
+
+		if ( 0 === $review_count && ! $show_empty ) {
 			return current_user_can( 'edit_posts' ) ? '<p class="truspilot-review-notice">' . esc_html__( 'Add or import local reviews to display this block.', 'truspilot-review' ) . '</p>' : '';
 		}
+
+		$grid_cells = ( 'grid' === $layout ) ? $grid_rows * $grid_columns : 0;
 
 		wp_enqueue_style( 'truspilot-review-frontend' );
 		wp_enqueue_script( 'truspilot-review-frontend' );
@@ -112,6 +134,12 @@ final class Truspilot_Review_Renderer {
 			'truspilot-review--' . $layout,
 			$full_page ? 'truspilot-review--full' : '',
 		);
+		if ( 'grid' === $layout ) {
+			$classes[] = 'truspilot-review--grid-cols-' . $grid_columns;
+		}
+		if ( 'wall' === $layout ) {
+			$classes[] = 'truspilot-review--wall-' . $wall_style;
+		}
 
 		ob_start();
 		?>
@@ -155,37 +183,62 @@ final class Truspilot_Review_Renderer {
 
 			<div class="truspilot-review__viewport">
 				<div class="truspilot-review__track">
-					<?php foreach ( $data['reviews'] as $index => $review ) : ?>
-						<article class="truspilot-review__card" data-truspilot-slide="<?php echo esc_attr( (string) $index ); ?>">
-							<div class="truspilot-review__rating" aria-label="<?php echo esc_attr( sprintf( __( '%s out of 5 stars', 'truspilot-review' ), $review['rating'] ) ); ?>">
-								<?php echo wp_kses_post( $this->render_stars( $review['rating'] ) ); ?>
+					<?php if ( $show_empty && 'grid' !== $layout ) : ?>
+						<article class="truspilot-review__card truspilot-review__card--empty">
+							<div class="truspilot-review__empty">
+								<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
 							</div>
-							<?php if ( ! empty( $review['title'] ) ) : ?>
-								<h3 class="truspilot-review__review-title"><?php echo esc_html( $review['title'] ); ?></h3>
-							<?php endif; ?>
-							<p class="truspilot-review__body"><?php echo esc_html( $review['body'] ); ?></p>
-							<?php if ( ! empty( $review['verified'] ) || ! empty( $review['country'] ) ) : ?>
-								<div class="truspilot-review__badges">
-									<?php if ( ! empty( $review['verified'] ) ) : ?>
-										<span><?php echo esc_html__( 'Verified', 'truspilot-review' ); ?></span>
-									<?php endif; ?>
-									<?php if ( ! empty( $review['country'] ) ) : ?>
-										<span><?php echo esc_html( $review['country'] ); ?></span>
-									<?php endif; ?>
-								</div>
-							<?php endif; ?>
-							<footer class="truspilot-review__meta">
-								<span><?php echo esc_html( $review['author'] ); ?></span>
-								<?php if ( ! empty( $review['date'] ) ) : ?>
-									<time datetime="<?php echo esc_attr( $review['date'] ); ?>"><?php echo esc_html( $this->format_review_date( $review['date'] ) ); ?></time>
-								<?php endif; ?>
-							</footer>
 						</article>
-					<?php endforeach; ?>
+					<?php elseif ( $show_empty && 'grid' === $layout ) : ?>
+						<?php for ( $i = 0; $i < $grid_cells; $i++ ) : ?>
+							<article class="truspilot-review__card truspilot-review__card--empty">
+								<div class="truspilot-review__empty">
+									<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+								</div>
+							</article>
+						<?php endfor; ?>
+					<?php else : ?>
+						<?php foreach ( $reviews as $index => $review ) : ?>
+							<article class="truspilot-review__card" data-truspilot-slide="<?php echo esc_attr( (string) $index ); ?>">
+								<div class="truspilot-review__rating" aria-label="<?php echo esc_attr( sprintf( __( '%s out of 5 stars', 'truspilot-review' ), $review['rating'] ) ); ?>">
+									<?php echo wp_kses_post( $this->render_stars( $review['rating'] ) ); ?>
+								</div>
+								<?php if ( ! empty( $review['title'] ) ) : ?>
+									<h3 class="truspilot-review__review-title"><?php echo esc_html( $review['title'] ); ?></h3>
+								<?php endif; ?>
+								<p class="truspilot-review__body"><?php echo esc_html( $review['body'] ); ?></p>
+								<?php if ( ! empty( $review['verified'] ) || ! empty( $review['country'] ) ) : ?>
+									<div class="truspilot-review__badges">
+										<?php if ( ! empty( $review['verified'] ) ) : ?>
+											<span><?php echo esc_html__( 'Verified', 'truspilot-review' ); ?></span>
+										<?php endif; ?>
+										<?php if ( ! empty( $review['country'] ) ) : ?>
+											<span><?php echo esc_html( $review['country'] ); ?></span>
+										<?php endif; ?>
+									</div>
+								<?php endif; ?>
+								<footer class="truspilot-review__meta">
+									<span><?php echo esc_html( $review['author'] ); ?></span>
+									<?php if ( ! empty( $review['date'] ) ) : ?>
+										<time datetime="<?php echo esc_attr( $review['date'] ); ?>"><?php echo esc_html( $this->format_review_date( $review['date'] ) ); ?></time>
+									<?php endif; ?>
+								</footer>
+							</article>
+						<?php endforeach; ?>
+						<?php if ( $grid_cells > 0 && $review_count < $grid_cells ) : ?>
+							<?php for ( $i = $review_count; $i < $grid_cells; $i++ ) : ?>
+								<article class="truspilot-review__card truspilot-review__card--empty">
+									<div class="truspilot-review__empty">
+										<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+									</div>
+								</article>
+							<?php endfor; ?>
+						<?php endif; ?>
+					<?php endif; ?>
 				</div>
 			</div>
 
-			<?php if ( 'carousel' === $layout && count( $data['reviews'] ) > 1 ) : ?>
+			<?php if ( 'carousel' === $layout && $review_count > 1 && ! $show_empty ) : ?>
 				<div class="truspilot-review__controls" aria-label="<?php echo esc_attr__( 'Review carousel controls', 'truspilot-review' ); ?>">
 					<button class="truspilot-review__button" type="button" data-truspilot-prev aria-label="<?php echo esc_attr__( 'Previous review', 'truspilot-review' ); ?>">&lsaquo;</button>
 					<div class="truspilot-review__dots" data-truspilot-dots></div>
@@ -206,9 +259,9 @@ final class Truspilot_Review_Renderer {
 	 * @param bool  $featured_first Featured first.
 	 * @return array
 	 */
-	private function get_local_reviews( $count, $min_rating, $featured_first ) {
+	private function get_local_reviews( $count, $min_rating, $featured_first, $all_featured = false ) {
 		$cache_bust = (int) get_option( 'truspilot_review_cache_bust', 1 );
-		$cache_key  = 'truspilot_r_' . $cache_bust . '_' . md5( serialize( array( $count, $min_rating, $featured_first ) ) );
+		$cache_key  = 'truspilot_r_' . $cache_bust . '_' . md5( serialize( array( $count, $min_rating, $featured_first, $all_featured ) ) );
 		$cached     = wp_cache_get( $cache_key, 'truspilot_review' );
 
 		if ( false !== $cached ) {
@@ -227,7 +280,7 @@ final class Truspilot_Review_Renderer {
 		$args = array(
 			'post_type'      => self::POST_TYPE,
 			'post_status'    => 'publish',
-			'posts_per_page' => $count,
+			'posts_per_page' => $all_featured ? -1 : ( 0 === $count ? 1 : $count ),
 			'meta_query'     => $meta_query,
 			'orderby'        => $featured_first ? array(
 				'meta_value_num' => 'DESC',
@@ -239,7 +292,13 @@ final class Truspilot_Review_Renderer {
 			),
 		);
 
-		if ( $featured_first ) {
+		if ( $all_featured ) {
+			$args['meta_query'][] = array(
+				'key'   => '_truspilot_featured',
+				'value' => '1',
+			);
+			unset( $args['meta_key'] );
+		} elseif ( $featured_first ) {
 			$args['meta_key'] = '_truspilot_featured';
 		}
 
