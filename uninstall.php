@@ -10,6 +10,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 delete_option( 'truspilot_review_settings' );
+delete_option( 'truspilot_review_cache_bust' );
 
 global $wpdb;
 

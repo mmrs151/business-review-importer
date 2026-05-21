@@ -54,6 +54,9 @@ final class Truspilot_Review_Plugin {
 		add_action( 'admin_post_truspilot_scrape_reviews', array( $this, 'handle_scrape_reviews' ) );
 		add_filter( 'manage_' . self::POST_TYPE . '_posts_columns', array( $this, 'review_columns' ) );
 		add_action( 'manage_' . self::POST_TYPE . '_posts_custom_column', array( $this, 'render_review_column' ), 10, 2 );
+		add_action( 'save_post_' . self::POST_TYPE, array( $this, 'flush_review_cache' ) );
+		add_action( 'trashed_post', array( $this, 'flush_review_cache' ) );
+		add_action( 'deleted_post', array( $this, 'flush_review_cache' ) );
 	}
 
 	/**
@@ -923,6 +926,14 @@ final class Truspilot_Review_Plugin {
 	 * @return array
 	 */
 	private function get_local_reviews( $count, $min_rating, $featured_first ) {
+		$cache_bust = (int) get_option( 'truspilot_review_cache_bust', 1 );
+		$cache_key  = 'truspilot_r_' . $cache_bust . '_' . md5( serialize( array( $count, $min_rating, $featured_first ) ) );
+		$cached     = wp_cache_get( $cache_key, 'truspilot_review' );
+
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
 		$meta_query = array(
 			array(
 				'key'     => '_truspilot_rating',
@@ -951,19 +962,33 @@ final class Truspilot_Review_Plugin {
 			$meta      = $this->get_review_meta( $post->ID );
 			$body      = $meta['short_excerpt'] ? $meta['short_excerpt'] : wp_strip_all_tags( $post->post_content );
 			$reviews[] = array(
-				'title'  => get_the_title( $post ),
-				'body'   => wp_trim_words( sanitize_textarea_field( $body ), 44, '...' ),
-				'author' => $meta['author'] ? $meta['author'] : __( 'Trustpilot reviewer', 'truspilot-review' ),
-				'date'   => $meta['date'],
-				'rating' => $meta['rating'],
-				'country' => $meta['country'],
+				'title'    => get_the_title( $post ),
+				'body'     => wp_trim_words( sanitize_textarea_field( $body ), 44, '...' ),
+				'author'   => $meta['author'] ? $meta['author'] : __( 'Trustpilot reviewer', 'truspilot-review' ),
+				'date'     => $meta['date'],
+				'rating'   => $meta['rating'],
+				'country'  => $meta['country'],
 				'verified' => $meta['verified'],
 			);
 		}
 
 		wp_reset_postdata();
 
-		return array( 'reviews' => $reviews );
+		$result = array( 'reviews' => $reviews );
+		wp_cache_set( $cache_key, $result, 'truspilot_review', 3600 );
+
+		return $result;
+	}
+
+	/**
+	 * Flush the review query cache.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function flush_review_cache( $post_id ) {
+		if ( self::POST_TYPE === get_post_type( $post_id ) ) {
+			update_option( 'truspilot_review_cache_bust', (int) get_option( 'truspilot_review_cache_bust', 1 ) + 1 );
+		}
 	}
 
 	/**
