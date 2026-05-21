@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for pure helper methods in Truspilot_Review_Plugin.
+ * Tests for pure helper methods in Truspilot_Review_Renderer.
  *
  * @package TruspilotReview
  */
@@ -12,34 +12,35 @@ use PHPUnit\Framework\TestCase;
  */
 class HelpersTest extends TestCase {
 	/**
-	 * Instance via reflection.
+	 * Renderer instance.
 	 *
-	 * @var Truspilot_Review_Plugin
+	 * @var Truspilot_Review_Renderer
 	 */
-	private $instance;
+	private $renderer;
 
 	/**
-	 * Set up: grab singleton instance via reflection.
+	 * Set up: grab plugin singleton via reflection and create renderer.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
 
-		$ref  = new ReflectionMethod( Truspilot_Review_Plugin::class, 'instance' );
-		$this->instance = $ref->invoke( null );
+		$ref            = new ReflectionMethod( Truspilot_Review_Plugin::class, 'instance' );
+		$plugin         = $ref->invoke( null );
+		$this->renderer = new Truspilot_Review_Renderer( $plugin );
 	}
 
 	/**
-	 * Call a private/protected method.
+	 * Call a private/protected method on the renderer.
 	 *
 	 * @param string $name Method name.
 	 * @param array  $args Arguments.
 	 * @return mixed
 	 */
 	private function call_private( $name, array $args = array() ) {
-		$method = new ReflectionMethod( Truspilot_Review_Plugin::class, $name );
+		$method = new ReflectionMethod( Truspilot_Review_Renderer::class, $name );
 		$method->setAccessible( true );
 
-		return $method->invokeArgs( $this->instance, $args );
+		return $method->invokeArgs( $this->renderer, $args );
 	}
 
 	/** @test */
