@@ -206,8 +206,9 @@ final class Truspilot_Review_Admin {
 
 			<h2><?php echo esc_html__( 'Shortcodes', 'truspilot-review' ); ?></h2>
 			<p><code>[truspilot_reviews count="3" layout="carousel" autoplay="true"]</code></p>
-			<p><code>[truspilot_reviews count="12" layout="grid" min_rating="4" featured_first="true"]</code></p>
-			<p><code>[truspilot_reviews count="24" layout="wall" full_page="true"]</code></p>
+			<p><code>[truspilot_reviews count="12" layout="grid" min_rating="4" featured_first="true" grid_rows="3" grid_columns="4"]</code></p>
+			<p><code>[truspilot_reviews count="24" layout="list" full_page="true"]</code></p>
+			<p><code>[truspilot_reviews count="0" layout="wall" wall_style="noticeboard"]</code></p>
 		</div>
 		<?php
 	}

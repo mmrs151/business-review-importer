@@ -72,20 +72,24 @@ JSON arrays are also supported:
 ```text
 [truspilot_reviews]
 [truspilot_reviews count="5" layout="carousel" autoplay="true" interval="6000"]
-[truspilot_reviews count="12" layout="grid" min_rating="4" featured_first="true"]
-[truspilot_reviews count="24" layout="wall" full_page="true"]
+[truspilot_reviews count="12" layout="grid" min_rating="4" featured_first="true" grid_rows="3" grid_columns="4"]
+[truspilot_reviews count="24" layout="list" full_page="true"]
+[truspilot_reviews count="0" layout="wall" wall_style="noticeboard"]
 ```
 
 ## Shortcode Attributes
 
-- `count`: Number of reviews to show, from `1` to `48`.
-- `layout`: `carousel`, `grid`, or `wall`.
+- `count`: Number of reviews to show, from `0` to `48`. `0` shows all featured reviews.
+- `layout`: `carousel`, `grid`, `list`, or `wall`.
 - `autoplay`: `true` or `false`.
 - `interval`: Carousel rotation interval in milliseconds, from `2500` to `20000`.
 - `full_page`: `true` expands the review section to full page width and height.
 - `title`: Section heading.
 - `min_rating`: Minimum review rating, from `1` to `5`.
 - `featured_first`: `true` shows featured reviews before standard reviews.
+- `grid_rows`: Number of grid rows, from `1` to `6`.
+- `grid_columns`: Number of grid columns, from `1` to `6`.
+- `wall_style`: `standard` or `noticeboard` (post-it note style).
 
 ## Notes
 
