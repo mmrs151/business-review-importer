@@ -24,6 +24,7 @@ require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-parser.php'
 require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-scraper.php';
 require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-importer.php';
 require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-renderer.php';
+require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-admin.php';
 require_once TRUSPILOT_REVIEW_DIR . 'includes/class-truspilot-review-plugin.php';
 
 add_action( 'plugins_loaded', array( 'Truspilot_Review_Plugin', 'instance' ) );
