@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for import parser methods in Truspilot_Review_Plugin.
+ * Tests for Truspilot_Review_Importer class.
  *
  * @package TruspilotReview
  */
@@ -12,34 +12,33 @@ use PHPUnit\Framework\TestCase;
  */
 class ImporterTest extends TestCase {
 	/**
-	 * Instance via reflection.
+	 * Importer instance.
 	 *
-	 * @var Truspilot_Review_Plugin
+	 * @var Truspilot_Review_Importer
 	 */
-	private $instance;
+	private $importer;
 
 	/**
-	 * Set up: grab singleton instance via reflection.
+	 * Set up: create importer with parser.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-
-		$ref  = new ReflectionMethod( Truspilot_Review_Plugin::class, 'instance' );
-		$this->instance = $ref->invoke( null );
+		$parser        = new Truspilot_Review_Parser();
+		$this->importer = new Truspilot_Review_Importer( $parser );
 	}
 
 	/**
-	 * Call a private/protected method.
+	 * Call a private method on the importer.
 	 *
 	 * @param string $name Method name.
 	 * @param array  $args Arguments.
 	 * @return mixed
 	 */
 	private function call_private( $name, array $args = array() ) {
-		$method = new ReflectionMethod( Truspilot_Review_Plugin::class, $name );
+		$method = new ReflectionMethod( Truspilot_Review_Importer::class, $name );
 		$method->setAccessible( true );
 
-		return $method->invokeArgs( $this->instance, $args );
+		return $method->invokeArgs( $this->importer, $args );
 	}
 
 	/** @test */
@@ -182,7 +181,7 @@ class ImporterTest extends TestCase {
 	public function parse_import_text_parses_json_array() {
 		$json = '[{"body": "Review 1", "author": "A", "rating": 5}, {"body": "Review 2", "author": "B", "rating": 4}]';
 
-		$result = $this->call_private( 'parse_import_text', array( $json ) );
+		$result = $this->importer->parse_import_text( $json );
 
 		$this->assertCount( 2, $result );
 		$this->assertSame( 'Review 1', $result[0]['body'] );
@@ -193,7 +192,7 @@ class ImporterTest extends TestCase {
 	public function parse_import_text_parses_plain_text_blocks() {
 		$text = "5 stars\nGreat\nReally happy with this\nAlice\n10 Jan 2025\n\n4 stars\nGood\nSolid product\nBob\n5 Mar 2025";
 
-		$result = $this->call_private( 'parse_import_text', array( $text ) );
+		$result = $this->importer->parse_import_text( $text );
 
 		$this->assertCount( 2, $result );
 		$this->assertSame( 'Great', $result[0]['title'] );
@@ -202,7 +201,7 @@ class ImporterTest extends TestCase {
 
 	/** @test */
 	public function parse_import_text_returns_empty_for_blank_input() {
-		$this->assertSame( array(), $this->call_private( 'parse_import_text', array( '' ) ) );
-		$this->assertSame( array(), $this->call_private( 'parse_import_text', array( '   ' ) ) );
+		$this->assertSame( array(), $this->importer->parse_import_text( '' ) );
+		$this->assertSame( array(), $this->importer->parse_import_text( '   ' ) );
 	}
 }

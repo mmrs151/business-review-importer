@@ -139,4 +139,5 @@ if ( ! function_exists( 'wp_cache_set' ) ) {
 
 require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-parser.php';
 require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-scraper.php';
+require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-importer.php';
 require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-plugin.php';
