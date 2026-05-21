@@ -153,6 +153,15 @@
 /* grid aspect ratio squares */
 .truspilot-review--grid .truspilot-review__card {
 	aspect-ratio: 1;
+	overflow: hidden;
+}
+
+.truspilot-review--grid .truspilot-review__review-title {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow-wrap: break-word;
 }
 
 /* list layout (masonry, formerly wall) */
