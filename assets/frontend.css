@@ -156,7 +156,8 @@
 	overflow: hidden;
 }
 
-.truspilot-review--grid .truspilot-review__review-title {
+.truspilot-review--grid .truspilot-review__review-title,
+.truspilot-review--wall .truspilot-review__review-title {
 	overflow: hidden;
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
@@ -216,6 +217,8 @@
 .truspilot-review--wall-standard .truspilot-review__card {
 	width: 260px;
 	flex: 0 0 auto;
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
 }
 
 /* Organic staggered offsets for scattered-wall feel */
@@ -256,6 +259,8 @@
 	background: #fffbe6;
 	border: 1px solid #e6dba0;
 	border-radius: 2px;
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
 	box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -339,7 +344,8 @@
 }
 
 .truspilot-review--grid .truspilot-review__body,
-.truspilot-review--carousel .truspilot-review__body {
+.truspilot-review--carousel .truspilot-review__body,
+.truspilot-review--wall .truspilot-review__body {
 	display: -webkit-box;
 	overflow: hidden;
 	-webkit-box-orient: vertical;
@@ -500,7 +506,7 @@
 	}
 
 	.truspilot-review--wall-standard .truspilot-review__card {
-		width: 220px;
+		width: 200px;
 	}
 }
 
