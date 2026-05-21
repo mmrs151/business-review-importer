@@ -164,19 +164,29 @@
 	overflow-wrap: break-word;
 }
 
-/* list layout (masonry, formerly wall) */
+/* list layout: simple scrollable vertical list */
 .truspilot-review--list .truspilot-review__track {
-	display: block;
-	columns: 18rem;
-	column-gap: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-height: 70vh;
+	overflow-y: auto;
+	padding-right: 0.25rem;
 }
 
 .truspilot-review--list .truspilot-review__card {
-	display: inline-flex;
 	width: 100%;
-	margin: 0 0 1rem;
-	break-inside: avoid;
-	-webkit-column-break-inside: avoid;
+}
+
+.truspilot-review--list .truspilot-review__body {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 6;
+}
+
+.truspilot-review--list .truspilot-review__viewport {
+	overflow-y: auto;
 }
 
 /* wall layout base */
@@ -334,13 +344,6 @@
 	overflow: hidden;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 5;
-}
-
-.truspilot-review--list .truspilot-review__body {
-	display: -webkit-box;
-	overflow: hidden;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 8;
 }
 
 .truspilot-review__rating {
