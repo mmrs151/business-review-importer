@@ -79,13 +79,14 @@ final class Truspilot_Review_Admin {
 		);
 
 		$fields = array(
-			'business_name'   => __( 'Business name', 'truspilot-review' ),
-			'business_domain' => __( 'Business domain', 'truspilot-review' ),
-			'public_url'      => __( 'Trustpilot profile URL', 'truspilot-review' ),
-			'trust_score'     => __( 'TrustScore', 'truspilot-review' ),
-			'star_rating'     => __( 'Star rating', 'truspilot-review' ),
-			'total_reviews'   => __( 'Total reviews', 'truspilot-review' ),
-			'rating_label'    => __( 'Rating label', 'truspilot-review' ),
+			'business_name'    => __( 'Business name', 'truspilot-review' ),
+			'business_domain'  => __( 'Business domain', 'truspilot-review' ),
+			'public_url'       => __( 'Trustpilot profile URL', 'truspilot-review' ),
+			'trust_score'      => __( 'TrustScore', 'truspilot-review' ),
+			'star_rating'      => __( 'Star rating', 'truspilot-review' ),
+			'total_reviews'    => __( 'Total reviews', 'truspilot-review' ),
+			'rating_label'     => __( 'Rating label', 'truspilot-review' ),
+			'card_background'  => __( 'Card background', 'truspilot-review' ),
 		);
 
 		foreach ( $fields as $field => $label ) {
@@ -262,7 +263,7 @@ final class Truspilot_Review_Admin {
 					</tr>
 					<tr>
 						<td><code>title</code></td>
-						<td><code>Customer reviews</code></td>
+						<td><code>Parent Reviews</code></td>
 						<td><?php echo esc_html__( 'Any text', 'truspilot-review' ); ?></td>
 						<td><?php echo esc_html__( 'Section heading.', 'truspilot-review' ); ?></td>
 					</tr>
@@ -399,16 +400,28 @@ final class Truspilot_Review_Admin {
 		$value    = isset( $settings[ $field ] ) ? $settings[ $field ] : '';
 		$type     = in_array( $field, array( 'trust_score', 'star_rating', 'total_reviews' ), true ) ? 'number' : 'text';
 		$step     = in_array( $field, array( 'trust_score', 'star_rating' ), true ) ? '0.1' : '1';
+
+		if ( 'card_background' === $field ) :
+			?>
+			<input type="color" id="<?php echo esc_attr( $field ); ?>" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $field ); ?>]" value="<?php echo esc_attr( $value ? $value : '#ffffff' ); ?>" />
+			<?php
+		else :
+			?>
+			<input
+				type="<?php echo esc_attr( $type ); ?>"
+				name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $field ); ?>]"
+				value="<?php echo esc_attr( (string) $value ); ?>"
+				class="regular-text"
+				<?php echo 'number' === $type ? 'step="' . esc_attr( $step ) . '"' : ''; ?>
+			/>
+			<?php
+		endif;
 		?>
-		<input
-			type="<?php echo esc_attr( $type ); ?>"
-			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $field ); ?>]"
-			value="<?php echo esc_attr( (string) $value ); ?>"
-			class="regular-text"
-			<?php echo 'number' === $type ? 'step="' . esc_attr( $step ) . '"' : ''; ?>
-		/>
 		<?php if ( 'public_url' === $field ) : ?>
 			<p class="description"><?php echo esc_html__( 'Example: https://uk.trustpilot.com/review/example.com', 'truspilot-review' ); ?></p>
+		<?php endif; ?>
+		<?php if ( 'card_background' === $field ) : ?>
+			<p class="description"><?php echo esc_html__( 'Default card background color for all layouts.', 'truspilot-review' ); ?></p>
 		<?php endif; ?>
 		<?php
 	}
@@ -429,13 +442,14 @@ final class Truspilot_Review_Admin {
 		}
 
 		return array(
-			'business_name'   => isset( $input['business_name'] ) ? sanitize_text_field( wp_unslash( $input['business_name'] ) ) : '',
-			'business_domain' => isset( $input['business_domain'] ) ? sanitize_text_field( wp_unslash( $input['business_domain'] ) ) : '',
-			'public_url'      => $url,
-			'trust_score'     => isset( $input['trust_score'] ) ? min( 5, max( 0, (float) $input['trust_score'] ) ) : 0,
-			'star_rating'     => isset( $input['star_rating'] ) ? min( 5, max( 0, (float) $input['star_rating'] ) ) : 0,
-			'total_reviews'   => isset( $input['total_reviews'] ) ? absint( $input['total_reviews'] ) : 0,
-			'rating_label'    => isset( $input['rating_label'] ) ? sanitize_text_field( wp_unslash( $input['rating_label'] ) ) : '',
+			'business_name'    => isset( $input['business_name'] ) ? sanitize_text_field( wp_unslash( $input['business_name'] ) ) : '',
+			'business_domain'  => isset( $input['business_domain'] ) ? sanitize_text_field( wp_unslash( $input['business_domain'] ) ) : '',
+			'public_url'       => $url,
+			'trust_score'      => isset( $input['trust_score'] ) ? min( 5, max( 0, (float) $input['trust_score'] ) ) : 0,
+			'star_rating'      => isset( $input['star_rating'] ) ? min( 5, max( 0, (float) $input['star_rating'] ) ) : 0,
+			'total_reviews'    => isset( $input['total_reviews'] ) ? absint( $input['total_reviews'] ) : 0,
+			'rating_label'     => isset( $input['rating_label'] ) ? sanitize_text_field( wp_unslash( $input['rating_label'] ) ) : '',
+			'card_background'  => isset( $input['card_background'] ) ? sanitize_hex_color( wp_unslash( $input['card_background'] ) ) : '',
 		);
 	}
 

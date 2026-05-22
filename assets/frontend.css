@@ -256,10 +256,10 @@
 	position: relative;
 	width: 250px;
 	padding: 1.5rem 1.5rem 1rem;
-	background: #fffbe6;
-	border: 1px solid #e6dba0;
+	background: var(--trp-card-bg, #f1faff);
+	border: 1px solid #bdd7e6;
 	border-radius: 2px;
-	aspect-ratio: 3 / 4;
+	aspect-ratio: 0;
 	overflow: hidden;
 	box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.08);
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -292,12 +292,26 @@
 .truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+5) { transform: rotate(-3.5deg); }
 .truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+6) { transform: rotate(1.5deg); }
 
+/* Larger summary text for wall-noticeboard */
+.truspilot-review--wall-noticeboard .truspilot-review__summary {
+	font-size: 1.15rem;
+	padding: 1rem 1.25rem;
+}
+
+.truspilot-review--wall-noticeboard .truspilot-review__summary .truspilot-review__score span {
+	font-size: 1.1rem;
+}
+
+.truspilot-review--wall-noticeboard .truspilot-review__summary .truspilot-review__count {
+	font-size: 1.05rem;
+}
+
 .truspilot-review__card {
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
 	padding: clamp(1rem, 2.5vw, 1.35rem);
-	background: rgba(255, 255, 255, 0.92);
+	background: var(--trp-card-bg, rgba(255, 255, 255, 0.92));
 	border: 1px solid rgba(0, 182, 122, 0.18);
 	border-radius: 8px;
 	box-shadow: 0 10px 28px rgba(23, 37, 47, 0.08);

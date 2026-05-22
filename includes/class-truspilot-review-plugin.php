@@ -227,13 +227,14 @@ final class Truspilot_Review_Plugin {
 	 */
 	private function default_settings() {
 		return array(
-			'business_name'   => '',
-			'business_domain' => '',
-			'public_url'      => '',
-			'trust_score'     => 0,
-			'star_rating'     => 0,
-			'total_reviews'   => 0,
-			'rating_label'    => '',
+			'business_name'    => '',
+			'business_domain'  => '',
+			'public_url'       => '',
+			'trust_score'      => 0,
+			'star_rating'      => 0,
+			'total_reviews'    => 0,
+			'rating_label'     => '',
+			'card_background'  => '',
 		);
 	}
 }

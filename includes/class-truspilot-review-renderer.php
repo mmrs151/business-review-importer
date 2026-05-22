@@ -48,16 +48,11 @@ final class Truspilot_Review_Renderer {
 				'autoplay'       => 'true',
 				'interval'       => 5500,
 				'full_page'      => 'false',
-				'title'          => __( 'Customer reviews', 'truspilot-review' ),
-				'min_rating'     => 1,
-				'featured_first' => 'true',
-				'grid_rows'      => 3,
-				'grid_columns'   => 3,
-				'wall_style'     => 'standard',
-			),
-			(array) $atts,
-			'truspilot_reviews'
-		);
+				'title'          => __( 'Parent Reviews', 'truspilot-review' ),
+		),
+		(array) $atts,
+		'truspilot_reviews'
+	);
 
 		return $this->render_reviews( $atts );
 	}
@@ -78,7 +73,7 @@ final class Truspilot_Review_Renderer {
 				'autoplay'       => ! empty( $attributes['autoplay'] ) ? 'true' : 'false',
 				'interval'       => isset( $attributes['interval'] ) ? $attributes['interval'] : 5500,
 				'full_page'      => ! empty( $attributes['fullPage'] ) ? 'true' : 'false',
-				'title'          => isset( $attributes['title'] ) ? $attributes['title'] : __( 'Customer reviews', 'truspilot-review' ),
+				'title'          => isset( $attributes['title'] ) ? $attributes['title'] : __( 'Parent Reviews', 'truspilot-review' ),
 				'min_rating'     => isset( $attributes['minRating'] ) ? $attributes['minRating'] : 1,
 				'featured_first' => ! empty( $attributes['featuredFirst'] ) ? 'true' : 'false',
 				'grid_rows'      => isset( $attributes['gridRows'] ) ? $attributes['gridRows'] : 3,
@@ -108,6 +103,7 @@ final class Truspilot_Review_Renderer {
 		$wall_style     = isset( $raw_atts['wall_style'] ) ? $this->sanitize_choice( $raw_atts['wall_style'], array( 'standard', 'noticeboard' ), 'standard' ) : 'standard';
 		$settings       = $this->plugin->get_settings();
 		$evaluate_url   = $this->get_evaluate_url( $settings );
+		$card_bg        = ! empty( $settings['card_background'] ) ? $settings['card_background'] : '';
 
 		$show_all_featured = ( 0 === $count && $featured_first );
 		$show_empty        = ( 0 === $count && ! $featured_first );
@@ -146,6 +142,7 @@ final class Truspilot_Review_Renderer {
 		?>
 		<section
 			class="<?php echo esc_attr( trim( implode( ' ', array_filter( $classes ) ) ) ); ?>"
+			<?php echo $card_bg ? 'style="--trp-card-bg:' . esc_attr( $card_bg ) . '"' : ''; ?>
 			data-truspilot-review
 			data-layout="<?php echo esc_attr( $layout ); ?>"
 			data-autoplay="<?php echo esc_attr( $autoplay ? 'true' : 'false' ); ?>"
