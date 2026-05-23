@@ -95,8 +95,8 @@ final class Truspilot_Review_Renderer {
 		$autoplay       = $this->to_bool( isset( $raw_atts['autoplay'] ) ? $raw_atts['autoplay'] : 'true' );
 		$full_page      = $this->to_bool( isset( $raw_atts['full_page'] ) ? $raw_atts['full_page'] : 'false' );
 		$featured_first = $this->to_bool( isset( $raw_atts['featured_first'] ) ? $raw_atts['featured_first'] : 'true' );
-		$interval       = min( 20000, max( 2500, absint( $raw_atts['interval'] ) ) );
-		$min_rating     = min( 5, max( 1, (float) $raw_atts['min_rating'] ) );
+		$interval       = min( 20000, max( 2500, absint( $raw_atts['interval'] ?? 5500 ) ) );
+		$min_rating     = min( 5, max( 1, (float) ( $raw_atts['min_rating'] ?? 1 ) ) );
 		$title          = isset( $raw_atts['title'] ) ? sanitize_text_field( wp_unslash( $raw_atts['title'] ) ) : '';
 		$grid_rows      = isset( $raw_atts['grid_rows'] ) ? min( 6, max( 1, absint( $raw_atts['grid_rows'] ) ) ) : 3;
 		$grid_columns   = isset( $raw_atts['grid_columns'] ) ? min( 6, max( 1, absint( $raw_atts['grid_columns'] ) ) ) : 3;
