@@ -175,7 +175,11 @@ final class Truspilot_Review_Renderer {
 						<h2 class="truspilot-review__title"><?php echo esc_html( $title ); ?></h2>
 					<?php endif; ?>
 					<?php if ( ! empty( $settings['business_name'] ) ) : ?>
-						<p class="truspilot-review__business"><?php echo esc_html( $settings['business_name'] ); ?></p>
+						<?php if ( ! empty( $settings['public_url'] ) ) : ?>
+							<a class="truspilot-review__business" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank"><?php echo esc_html( $settings['business_name'] ); ?></a>
+						<?php else : ?>
+							<p class="truspilot-review__business"><?php echo esc_html( $settings['business_name'] ); ?></p>
+						<?php endif; ?>
 					<?php endif; ?>
 				</div>
 				<?php if ( ! empty( $settings['public_url'] ) ) : ?>
@@ -186,7 +190,11 @@ final class Truspilot_Review_Renderer {
 			</div>
 
 			<?php if ( $this->has_profile_summary( $settings ) ) : ?>
+				<?php if ( ! empty( $settings['public_url'] ) ) : ?>
+				<a class="truspilot-review__summary" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank">
+				<?php else : ?>
 				<div class="truspilot-review__summary">
+				<?php endif; ?>
 					<div class="truspilot-review__score">
 						<strong><?php echo esc_html( $settings['rating_label'] ? $settings['rating_label'] : __( 'Rated', 'truspilot-review' ) ); ?></strong>
 						<span><?php echo esc_html( $settings['trust_score'] ? number_format_i18n( (float) $settings['trust_score'], 1 ) : number_format_i18n( (float) $settings['star_rating'], 1 ) ); ?> / 5</span>
@@ -197,7 +205,11 @@ final class Truspilot_Review_Renderer {
 					<?php if ( ! empty( $settings['total_reviews'] ) ) : ?>
 						<span class="truspilot-review__count"><?php echo esc_html( sprintf( _n( '%s review', '%s reviews', (int) $settings['total_reviews'], 'truspilot-review' ), number_format_i18n( (int) $settings['total_reviews'] ) ) ); ?></span>
 					<?php endif; ?>
+				<?php if ( ! empty( $settings['public_url'] ) ) : ?>
+				</a>
+				<?php else : ?>
 				</div>
+				<?php endif; ?>
 			<?php endif; ?>
 
 			<div class="truspilot-review__viewport">

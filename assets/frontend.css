@@ -54,9 +54,18 @@
 }
 
 .truspilot-review__business {
+	display: inline-block;
 	margin: 0.35rem 0 0;
 	color: var(--trp-muted);
 	font-size: 0.98rem;
+	text-decoration: none;
+}
+
+a.truspilot-review__business:hover,
+a.truspilot-review__business:focus {
+	color: var(--trp-green-dark);
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 .truspilot-review__source {
@@ -97,6 +106,16 @@
 	background: var(--trp-soft);
 	border: 1px solid #cdeee0;
 	border-radius: 8px;
+	text-decoration: none;
+	color: inherit;
+	transition: border-color 150ms, box-shadow 150ms;
+}
+
+a.truspilot-review__summary:hover,
+a.truspilot-review__summary:focus {
+	border-color: var(--trp-green);
+	box-shadow: 0 0 0 3px rgba(0, 182, 122, 0.12);
+	outline: 2px solid transparent;
 }
 
 .truspilot-review__score {
