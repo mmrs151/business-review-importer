@@ -431,19 +431,36 @@ final class Truspilot_Review_Renderer {
 	 * @return string
 	 */
 	private function get_evaluate_url( array $settings ) {
+		$domain = '';
 		if ( ! empty( $settings['business_domain'] ) ) {
-			return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $settings['business_domain'] );
-		}
-		if ( ! empty( $settings['public_url'] ) ) {
+			$domain = $this->clean_domain( $settings['business_domain'] );
+		} elseif ( ! empty( $settings['public_url'] ) ) {
 			$path = wp_parse_url( $settings['public_url'], PHP_URL_PATH );
 			if ( $path ) {
-				$domain = trim( str_replace( '/review/', '', $path ), '/' );
-				if ( $domain ) {
-					return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $domain );
-				}
+				$domain = $this->clean_domain( str_replace( '/review/', '', $path ) );
 			}
 		}
+
+		if ( $domain ) {
+			return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $domain );
+		}
+
 		return '';
+	}
+
+	/**
+	 * Strip protocol and path from a domain string.
+	 *
+	 * @param string $raw Raw domain or URL.
+	 * @return string
+	 */
+	private function clean_domain( $raw ) {
+		$domain = trim( (string) $raw, "/ \t\n\r\0\x0B" );
+		$host  = wp_parse_url( $domain, PHP_URL_HOST );
+		if ( $host ) {
+			return $host;
+		}
+		return $domain;
 	}
 
 	/**

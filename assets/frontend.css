@@ -99,13 +99,13 @@ a.truspilot-review__business:focus {
 .truspilot-review__summary {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.7rem 1rem;
+	gap: 0.6rem 1.2rem;
 	align-items: center;
 	margin: -0.25rem 0 1.15rem;
-	padding: 0.85rem 1rem;
+	padding: 1rem 1.35rem;
 	background: var(--trp-soft);
 	border: 1px solid #cdeee0;
-	border-radius: 8px;
+	border-radius: 10px;
 	text-decoration: none;
 	color: inherit;
 	transition: border-color 150ms, box-shadow 150ms;
@@ -120,23 +120,41 @@ a.truspilot-review__summary:focus {
 
 .truspilot-review__score {
 	display: flex;
-	gap: 0.45rem;
+	gap: 0.5rem;
 	align-items: baseline;
 	color: var(--trp-ink);
 }
 
 .truspilot-review__score strong {
 	font-size: 0.98rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+	color: var(--trp-muted);
 }
 
-.truspilot-review__score span,
+.truspilot-review__score span {
+	color: var(--trp-ink);
+	font-size: 1.85rem;
+	font-weight: 780;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+}
+
 .truspilot-review__count {
 	color: var(--trp-muted);
-	font-size: 0.92rem;
+	font-size: 1rem;
+	font-weight: 500;
 }
 
 .truspilot-review__summary .truspilot-review__rating {
 	margin-bottom: 0;
+}
+
+.truspilot-review__summary .truspilot-review__star {
+	width: 1.65rem;
+	height: 1.65rem;
+	font-size: 1rem;
 }
 
 .truspilot-review__track {
@@ -148,6 +166,7 @@ a.truspilot-review__summary:focus {
 
 .truspilot-review--carousel .truspilot-review__track {
 	display: flex;
+	align-items: stretch;
 	gap: 0;
 	transition: transform 360ms ease;
 	will-change: transform;
@@ -313,16 +332,11 @@ a.truspilot-review__summary:focus {
 
 /* Larger summary text for wall-noticeboard */
 .truspilot-review--wall-noticeboard .truspilot-review__summary {
-	font-size: 1.15rem;
-	padding: 1rem 1.25rem;
+	padding: 1.1rem 1.5rem;
 }
 
 .truspilot-review--wall-noticeboard .truspilot-review__summary .truspilot-review__score span {
-	font-size: 1.1rem;
-}
-
-.truspilot-review--wall-noticeboard .truspilot-review__summary .truspilot-review__count {
-	font-size: 1.05rem;
+	font-size: 2rem;
 }
 
 .truspilot-review__card {
@@ -361,6 +375,7 @@ a.truspilot-review__card-link:focus {
 .truspilot-review--carousel .truspilot-review__card {
 	flex: 0 0 calc(100% / var(--trp-visible, 1));
 	min-height: 15.5rem;
+	align-self: stretch;
 }
 
 /* Empty placeholder card */
