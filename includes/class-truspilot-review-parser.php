@@ -76,7 +76,7 @@ final class Truspilot_Review_Parser {
 						'rating'     => $current['rating'],
 						'date'       => isset( $current['dates']['publishedDate'] ) ? $current['dates']['publishedDate'] : '',
 						'country'    => isset( $current['consumer']['countryCode'] ) ? $current['consumer']['countryCode'] : '',
-						'source_url' => isset( $current['url'] ) ? $current['url'] : '',
+						'source_url' => isset( $current['url'] ) ? $current['url'] : ( isset( $current['consumer']['id'] ) ? 'https://uk.trustpilot.com/users/' . $current['consumer']['id'] : '' ),
 					)
 				);
 
@@ -131,7 +131,7 @@ final class Truspilot_Review_Parser {
 					'author'     => isset( $node['author']['name'] ) ? $node['author']['name'] : '',
 					'rating'     => isset( $node['reviewRating']['ratingValue'] ) ? $node['reviewRating']['ratingValue'] : 5,
 					'date'       => isset( $node['datePublished'] ) ? $node['datePublished'] : '',
-					'source_url' => isset( $node['url'] ) ? $node['url'] : '',
+					'source_url' => isset( $node['url'] ) ? $node['url'] : ( isset( $node['author']['url'] ) ? $node['author']['url'] : ( isset( $node['author']['@id'] ) ? $node['author']['@id'] : '' ) ),
 				)
 			);
 
