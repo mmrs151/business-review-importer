@@ -238,7 +238,13 @@ final class Truspilot_Review_Renderer {
 						<?php endfor; ?>
 					<?php else : ?>
 						<?php foreach ( $reviews as $index => $review ) : ?>
-							<article class="truspilot-review__card" data-truspilot-slide="<?php echo esc_attr( (string) $index ); ?>">
+							<?php
+							$review_url = ! empty( $review['source_url'] ) ? $review['source_url'] : '';
+							?>
+							<article class="truspilot-review__card<?php echo $review_url ? ' truspilot-review__card--linked' : ''; ?>" data-truspilot-slide="<?php echo esc_attr( (string) $index ); ?>">
+								<?php if ( $review_url ) : ?>
+								<a href="<?php echo esc_url( $review_url ); ?>" rel="nofollow noopener" target="_blank" class="truspilot-review__card-link">
+								<?php endif; ?>
 								<div class="truspilot-review__rating" aria-label="<?php echo esc_attr( sprintf( __( '%s out of 5 stars', 'truspilot-review' ), $review['rating'] ) ); ?>">
 									<?php echo wp_kses_post( $this->render_stars( $review['rating'] ) ); ?>
 								</div>
@@ -262,6 +268,9 @@ final class Truspilot_Review_Renderer {
 										<time datetime="<?php echo esc_attr( $review['date'] ); ?>"><?php echo esc_html( $this->format_review_date( $review['date'] ) ); ?></time>
 									<?php endif; ?>
 								</footer>
+								<?php if ( $review_url ) : ?>
+								</a>
+								<?php endif; ?>
 							</article>
 						<?php endforeach; ?>
 						<?php if ( $grid_cells > 0 && $review_count < $grid_cells ) : ?>
@@ -352,13 +361,14 @@ final class Truspilot_Review_Renderer {
 			$meta      = $this->plugin->get_review_meta( $post->ID );
 			$body      = $meta['short_excerpt'] ? $meta['short_excerpt'] : wp_strip_all_tags( $post->post_content );
 			$reviews[] = array(
-				'title'    => get_the_title( $post ),
-				'body'     => wp_trim_words( sanitize_textarea_field( $body ), 44, '...' ),
-				'author'   => $meta['author'] ? $meta['author'] : __( 'Trustpilot reviewer', 'truspilot-review' ),
-				'date'     => $meta['date'],
-				'rating'   => $meta['rating'],
-				'country'  => $meta['country'],
-				'verified' => $meta['verified'],
+				'title'      => get_the_title( $post ),
+				'body'       => wp_trim_words( sanitize_textarea_field( $body ), 44, '...' ),
+				'author'     => $meta['author'] ? $meta['author'] : __( 'Trustpilot reviewer', 'truspilot-review' ),
+				'date'       => $meta['date'],
+				'rating'     => $meta['rating'],
+				'country'    => $meta['country'],
+				'verified'   => $meta['verified'],
+				'source_url' => $meta['source_url'],
 			);
 		}
 

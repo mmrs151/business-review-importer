@@ -336,6 +336,28 @@ a.truspilot-review__summary:focus {
 	box-shadow: 0 10px 28px rgba(23, 37, 47, 0.08);
 }
 
+.truspilot-review__card--linked {
+	padding: 0;
+	overflow: hidden;
+}
+
+a.truspilot-review__card-link {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	padding: clamp(1rem, 2.5vw, 1.35rem);
+	color: inherit;
+	text-decoration: none;
+	transition: background 120ms, box-shadow 120ms;
+}
+
+a.truspilot-review__card-link:hover,
+a.truspilot-review__card-link:focus {
+	background: rgba(0, 182, 122, 0.03);
+	box-shadow: inset 0 0 0 2px rgba(0, 182, 122, 0.2);
+	outline: 2px solid transparent;
+}
+
 .truspilot-review--carousel .truspilot-review__card {
 	flex: 0 0 calc(100% / var(--trp-visible, 1));
 	min-height: 15.5rem;

@@ -70,12 +70,13 @@ final class Truspilot_Review_Parser {
 			if ( isset( $current['text'], $current['rating'] ) || isset( $current['content'], $current['rating'] ) ) {
 				$review = $this->normalize_scraped_review(
 					array(
-						'title'   => isset( $current['title'] ) ? $current['title'] : '',
-						'body'    => isset( $current['text'] ) ? $current['text'] : $current['content'],
-						'author'  => isset( $current['consumer']['displayName'] ) ? $current['consumer']['displayName'] : '',
-						'rating'  => $current['rating'],
-						'date'    => isset( $current['dates']['publishedDate'] ) ? $current['dates']['publishedDate'] : '',
-						'country' => isset( $current['consumer']['countryCode'] ) ? $current['consumer']['countryCode'] : '',
+						'title'      => isset( $current['title'] ) ? $current['title'] : '',
+						'body'       => isset( $current['text'] ) ? $current['text'] : $current['content'],
+						'author'     => isset( $current['consumer']['displayName'] ) ? $current['consumer']['displayName'] : '',
+						'rating'     => $current['rating'],
+						'date'       => isset( $current['dates']['publishedDate'] ) ? $current['dates']['publishedDate'] : '',
+						'country'    => isset( $current['consumer']['countryCode'] ) ? $current['consumer']['countryCode'] : '',
+						'source_url' => isset( $current['url'] ) ? $current['url'] : '',
 					)
 				);
 
@@ -125,11 +126,12 @@ final class Truspilot_Review_Parser {
 		if ( false !== stripos( $type, 'Review' ) ) {
 			$review = $this->normalize_scraped_review(
 				array(
-					'title'  => isset( $node['name'] ) ? $node['name'] : '',
-					'body'   => isset( $node['reviewBody'] ) ? $node['reviewBody'] : ( isset( $node['description'] ) ? $node['description'] : '' ),
-					'author' => isset( $node['author']['name'] ) ? $node['author']['name'] : '',
-					'rating' => isset( $node['reviewRating']['ratingValue'] ) ? $node['reviewRating']['ratingValue'] : 5,
-					'date'   => isset( $node['datePublished'] ) ? $node['datePublished'] : '',
+					'title'      => isset( $node['name'] ) ? $node['name'] : '',
+					'body'       => isset( $node['reviewBody'] ) ? $node['reviewBody'] : ( isset( $node['description'] ) ? $node['description'] : '' ),
+					'author'     => isset( $node['author']['name'] ) ? $node['author']['name'] : '',
+					'rating'     => isset( $node['reviewRating']['ratingValue'] ) ? $node['reviewRating']['ratingValue'] : 5,
+					'date'       => isset( $node['datePublished'] ) ? $node['datePublished'] : '',
+					'source_url' => isset( $node['url'] ) ? $node['url'] : '',
 				)
 			);
 
@@ -165,7 +167,7 @@ final class Truspilot_Review_Parser {
 			'author'     => isset( $review['author'] ) ? sanitize_text_field( $review['author'] ) : '',
 			'rating'     => isset( $review['rating'] ) ? min( 5, max( 1, (float) $review['rating'] ) ) : 5,
 			'date'       => $date,
-			'source_url' => '',
+			'source_url' => isset( $review['source_url'] ) ? esc_url_raw( $review['source_url'] ) : '',
 			'country'    => isset( $review['country'] ) ? sanitize_text_field( $review['country'] ) : '',
 			'verified'   => true,
 			'featured'   => true,
