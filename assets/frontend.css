@@ -318,7 +318,7 @@
 }
 
 .truspilot-review--carousel .truspilot-review__card {
-	flex: 0 0 100%;
+	flex: 0 0 calc(100% / var(--trp-visible, 1));
 	min-height: 15.5rem;
 }
 

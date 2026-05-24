@@ -44,17 +44,18 @@ final class Truspilot_Review_Renderer {
 		$default_title = $this->plugin->get_settings()['default_title'];
 		$atts = shortcode_atts(
 			array(
-				'count'          => self::DEFAULT_COUNT,
-				'layout'         => 'carousel',
-				'autoplay'       => 'true',
-				'interval'       => 5500,
-				'full_page'      => 'false',
-				'title'          => $default_title ?: __( 'Parent Reviews', 'truspilot-review' ),
-				'min_rating'     => 1,
-				'featured_first' => 'true',
-				'grid_rows'      => 3,
-				'grid_columns'   => 3,
-				'wall_style'     => 'standard',
+				'count'            => self::DEFAULT_COUNT,
+				'layout'           => 'carousel',
+				'autoplay'         => 'true',
+				'interval'         => 5500,
+				'full_page'        => 'false',
+				'title'            => $default_title ?: __( 'Parent Reviews', 'truspilot-review' ),
+				'min_rating'       => 1,
+				'featured_first'   => 'true',
+				'grid_rows'        => 3,
+				'grid_columns'     => 3,
+				'wall_style'       => 'standard',
+				'carousel_visible' => 1,
 			),
 			(array) $atts,
 			'truspilot_reviews'
@@ -75,17 +76,18 @@ final class Truspilot_Review_Renderer {
 
 		return $this->render_reviews(
 			array(
-				'count'          => isset( $attributes['count'] ) ? $attributes['count'] : self::DEFAULT_COUNT,
-				'layout'         => isset( $attributes['layout'] ) ? $attributes['layout'] : 'carousel',
-				'autoplay'       => ! empty( $attributes['autoplay'] ) ? 'true' : 'false',
-				'interval'       => isset( $attributes['interval'] ) ? $attributes['interval'] : 5500,
-				'full_page'      => ! empty( $attributes['fullPage'] ) ? 'true' : 'false',
-				'title'          => isset( $attributes['title'] ) ? $attributes['title'] : ( $default_title ?: __( 'Parent Reviews', 'truspilot-review' ) ),
-				'min_rating'     => isset( $attributes['minRating'] ) ? $attributes['minRating'] : 1,
-				'featured_first' => ! empty( $attributes['featuredFirst'] ) ? 'true' : 'false',
-				'grid_rows'      => isset( $attributes['gridRows'] ) ? $attributes['gridRows'] : 3,
-				'grid_columns'   => isset( $attributes['gridColumns'] ) ? $attributes['gridColumns'] : 3,
-				'wall_style'     => isset( $attributes['wallStyle'] ) ? $attributes['wallStyle'] : 'standard',
+				'count'            => isset( $attributes['count'] ) ? $attributes['count'] : self::DEFAULT_COUNT,
+				'layout'           => isset( $attributes['layout'] ) ? $attributes['layout'] : 'carousel',
+				'autoplay'         => ! empty( $attributes['autoplay'] ) ? 'true' : 'false',
+				'interval'         => isset( $attributes['interval'] ) ? $attributes['interval'] : 5500,
+				'full_page'        => ! empty( $attributes['fullPage'] ) ? 'true' : 'false',
+				'title'            => isset( $attributes['title'] ) ? $attributes['title'] : ( $default_title ?: __( 'Parent Reviews', 'truspilot-review' ) ),
+				'min_rating'       => isset( $attributes['minRating'] ) ? $attributes['minRating'] : 1,
+				'featured_first'   => ! empty( $attributes['featuredFirst'] ) ? 'true' : 'false',
+				'grid_rows'        => isset( $attributes['gridRows'] ) ? $attributes['gridRows'] : 3,
+				'grid_columns'     => isset( $attributes['gridColumns'] ) ? $attributes['gridColumns'] : 3,
+				'wall_style'       => isset( $attributes['wallStyle'] ) ? $attributes['wallStyle'] : 'standard',
+				'carousel_visible' => isset( $attributes['carouselVisible'] ) ? $attributes['carouselVisible'] : 1,
 			)
 		);
 	}
@@ -108,6 +110,7 @@ final class Truspilot_Review_Renderer {
 		$grid_rows      = isset( $raw_atts['grid_rows'] ) ? min( 6, max( 1, absint( $raw_atts['grid_rows'] ) ) ) : 3;
 		$grid_columns   = isset( $raw_atts['grid_columns'] ) ? min( 6, max( 1, absint( $raw_atts['grid_columns'] ) ) ) : 3;
 		$wall_style     = isset( $raw_atts['wall_style'] ) ? $this->sanitize_choice( $raw_atts['wall_style'], array( 'standard', 'noticeboard' ), 'standard' ) : 'standard';
+		$carousel_visible = isset( $raw_atts['carousel_visible'] ) ? min( 6, max( 1, absint( $raw_atts['carousel_visible'] ) ) ) : 1;
 		$settings       = $this->plugin->get_settings();
 		$evaluate_url   = $this->get_evaluate_url( $settings );
 		$card_bg        = ! empty( $settings['card_background'] ) ? $settings['card_background'] : '';
@@ -145,15 +148,26 @@ final class Truspilot_Review_Renderer {
 			$classes[] = 'truspilot-review--wall-' . $wall_style;
 		}
 
+		$section_style = '';
+		if ( $card_bg ) {
+			$section_style .= '--trp-card-bg:' . esc_attr( $card_bg ) . ';';
+		}
+		if ( 'carousel' === $layout && $carousel_visible > 1 ) {
+			$section_style .= '--trp-visible:' . (string) $carousel_visible . ';';
+		}
+
 		ob_start();
 		?>
 		<section
 			class="<?php echo esc_attr( trim( implode( ' ', array_filter( $classes ) ) ) ); ?>"
-			<?php echo $card_bg ? 'style="--trp-card-bg:' . esc_attr( $card_bg ) . '"' : ''; ?>
+			<?php echo $section_style ? 'style="' . $section_style . '"' : ''; ?>
 			data-truspilot-review
 			data-layout="<?php echo esc_attr( $layout ); ?>"
 			data-autoplay="<?php echo esc_attr( $autoplay ? 'true' : 'false' ); ?>"
 			data-interval="<?php echo esc_attr( (string) $interval ); ?>"
+			<?php if ( 'carousel' === $layout ) : ?>
+			data-visible="<?php echo esc_attr( (string) $carousel_visible ); ?>"
+			<?php endif; ?>
 		>
 			<div class="truspilot-review__header">
 				<div>

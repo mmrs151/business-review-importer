@@ -51,6 +51,10 @@
 		"wallStyle": {
 			"type": "string",
 			"default": "standard"
+		},
+		"carouselVisible": {
+			"type": "number",
+			"default": 1
 		}
 	},
 	"editorScript": "truspilot-review-block",

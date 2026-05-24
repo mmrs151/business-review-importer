@@ -75,6 +75,14 @@ registerBlockType('truspilot-review/reviews', {
 							step: 500,
 							onChange: (value) => setAttributes({ interval: value }),
 						}),
+					'carousel' === layout &&
+						createElement(RangeControl, {
+							label: 'Visible reviews at once',
+							value: attributes.carouselVisible,
+							min: 1,
+							max: 6,
+							onChange: (value) => setAttributes({ carouselVisible: value }),
+						}),
 					'grid' === layout &&
 						createElement(RangeControl, {
 							label: 'Grid rows',
