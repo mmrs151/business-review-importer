@@ -239,7 +239,7 @@ final class Truspilot_Review_Renderer {
 					<?php else : ?>
 						<?php foreach ( $reviews as $index => $review ) : ?>
 							<?php
-							$review_url = ! empty( $review['source_url'] ) ? $review['source_url'] : '';
+							$review_url = ! empty( $review['source_url'] ) ? $review['source_url'] : ( ! empty( $settings['public_url'] ) ? $settings['public_url'] : '' );
 							?>
 							<article class="truspilot-review__card<?php echo $review_url ? ' truspilot-review__card--linked' : ''; ?>" data-truspilot-slide="<?php echo esc_attr( (string) $index ); ?>">
 								<?php if ( $review_url ) : ?>
@@ -431,20 +431,18 @@ final class Truspilot_Review_Renderer {
 	 * @return string
 	 */
 	private function get_evaluate_url( array $settings ) {
-		$domain = '';
-		if ( ! empty( $settings['business_domain'] ) ) {
-			$domain = $this->clean_domain( $settings['business_domain'] );
-		} elseif ( ! empty( $settings['public_url'] ) ) {
-			$path = wp_parse_url( $settings['public_url'], PHP_URL_PATH );
-			if ( $path ) {
-				$domain = $this->clean_domain( str_replace( '/review/', '', $path ) );
+		if ( ! empty( $settings['public_url'] ) ) {
+			$evaluate = str_replace( '/review/', '/evaluate/', $settings['public_url'] );
+			if ( $evaluate !== $settings['public_url'] ) {
+				return esc_url_raw( $evaluate );
 			}
 		}
-
-		if ( $domain ) {
-			return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $domain );
+		if ( ! empty( $settings['business_domain'] ) ) {
+			$domain = $this->clean_domain( $settings['business_domain'] );
+			if ( $domain ) {
+				return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $domain );
+			}
 		}
-
 		return '';
 	}
 
