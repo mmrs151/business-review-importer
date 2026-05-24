@@ -32,27 +32,17 @@ final class Truspilot_Review_Admin {
 	private $importer;
 
 	/**
-	 * Scraper instance.
-	 *
-	 * @var Truspilot_Review_Scraper
-	 */
-	private $scraper;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Truspilot_Review_Plugin   $plugin   Main plugin instance.
 	 * @param Truspilot_Review_Importer $importer Importer instance.
-	 * @param Truspilot_Review_Scraper  $scraper  Scraper instance.
 	 */
 	public function __construct(
 		Truspilot_Review_Plugin $plugin,
-		Truspilot_Review_Importer $importer,
-		Truspilot_Review_Scraper $scraper
+		Truspilot_Review_Importer $importer
 	) {
 		$this->plugin   = $plugin;
 		$this->importer = $importer;
-		$this->scraper  = $scraper;
 	}
 
 	/**
@@ -87,6 +77,7 @@ final class Truspilot_Review_Admin {
 			'total_reviews'    => __( 'Total reviews', 'truspilot-review' ),
 			'rating_label'     => __( 'Rating label', 'truspilot-review' ),
 			'card_background'  => __( 'Card background', 'truspilot-review' ),
+			'default_title'    => __( 'Default section title', 'truspilot-review' ),
 		);
 
 		foreach ( $fields as $field => $label ) {
@@ -133,20 +124,13 @@ final class Truspilot_Review_Admin {
 		}
 
 		$imported = isset( $_GET['truspilot_imported'] ) ? absint( $_GET['truspilot_imported'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$scraped  = isset( $_GET['truspilot_scraped'] ) ? absint( $_GET['truspilot_scraped'] ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$error    = isset( $_GET['truspilot_error'] ) ? sanitize_key( wp_unslash( $_GET['truspilot_error'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$settings = $this->plugin->get_settings();
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html__( 'Truspilot Review Blocks', 'truspilot-review' ); ?></h1>
 			<?php if ( null !== $imported ) : ?>
 				<div class="notice notice-success is-dismissible">
 					<p><?php echo esc_html( sprintf( _n( '%d review imported.', '%d reviews imported.', $imported, 'truspilot-review' ), $imported ) ); ?></p>
-				</div>
-			<?php endif; ?>
-			<?php if ( null !== $scraped ) : ?>
-				<div class="notice notice-success is-dismissible">
-					<p><?php echo esc_html( sprintf( _n( '%d review scraped and saved locally.', '%d reviews scraped and saved locally.', $scraped, 'truspilot-review' ), $scraped ) ); ?></p>
 				</div>
 			<?php endif; ?>
 			<?php if ( $error ) : ?>
@@ -161,36 +145,6 @@ final class Truspilot_Review_Admin {
 				do_settings_sections( 'truspilot-review' );
 				submit_button();
 				?>
-			</form>
-
-			<hr />
-			<h2><?php echo esc_html__( 'Automatic Public Scrape', 'truspilot-review' ); ?></h2>
-			<p><?php echo esc_html__( 'Optionally scrape reviews from the saved public Trustpilot profile URL and save them locally. This follows the public-page pagination approach used by open-source Trustpilot scrapers, but Trustpilot may block server requests with browser verification.', 'truspilot-review' ); ?></p>
-			<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
-				<input type="hidden" name="action" value="truspilot_scrape_reviews" />
-				<?php wp_nonce_field( 'truspilot_scrape_reviews', 'truspilot_scrape_nonce' ); ?>
-				<table class="form-table" role="presentation">
-					<tr>
-						<th><label for="truspilot_scrape_url"><?php echo esc_html__( 'Profile URL', 'truspilot-review' ); ?></label></th>
-						<td>
-							<input type="url" class="regular-text" id="truspilot_scrape_url" name="truspilot_scrape_url" value="<?php echo esc_attr( $settings['public_url'] ); ?>" placeholder="https://uk.trustpilot.com/review/example.com" required />
-						</td>
-					</tr>
-					<tr>
-						<th><label for="truspilot_scrape_pages"><?php echo esc_html__( 'Maximum pages', 'truspilot-review' ); ?></label></th>
-						<td>
-							<input type="number" id="truspilot_scrape_pages" name="truspilot_scrape_pages" min="1" max="50" value="5" />
-							<p class="description"><?php echo esc_html__( 'Each page is fetched with a short delay. Keep this modest to avoid aggressive requests.', 'truspilot-review' ); ?></p>
-						</td>
-					</tr>
-				</table>
-				<p>
-					<label>
-						<input type="checkbox" name="truspilot_clear_existing" value="1" />
-						<?php echo esc_html__( 'Move existing local reviews to trash before scraping', 'truspilot-review' ); ?>
-					</label>
-				</p>
-				<?php submit_button( __( 'Scrape & Save Reviews', 'truspilot-review' ), 'secondary' ); ?>
 			</form>
 
 			<hr />
@@ -450,6 +404,7 @@ final class Truspilot_Review_Admin {
 			'total_reviews'    => isset( $input['total_reviews'] ) ? absint( $input['total_reviews'] ) : 0,
 			'rating_label'     => isset( $input['rating_label'] ) ? sanitize_text_field( wp_unslash( $input['rating_label'] ) ) : '',
 			'card_background'  => isset( $input['card_background'] ) ? sanitize_hex_color( wp_unslash( $input['card_background'] ) ) : '',
+			'default_title'    => isset( $input['default_title'] ) ? sanitize_text_field( wp_unslash( $input['default_title'] ) ) : '',
 		);
 	}
 
@@ -588,45 +543,6 @@ final class Truspilot_Review_Admin {
 	}
 
 	/**
-	 * Handle public Trustpilot scrape import.
-	 */
-	public function handle_scrape_reviews() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You do not have permission to scrape reviews.', 'truspilot-review' ) );
-		}
-
-		if ( ! isset( $_POST['truspilot_scrape_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['truspilot_scrape_nonce'] ) ), 'truspilot_scrape_reviews' ) ) {
-			wp_die( esc_html__( 'Scrape security check failed.', 'truspilot-review' ) );
-		}
-
-		$url       = isset( $_POST['truspilot_scrape_url'] ) ? esc_url_raw( wp_unslash( $_POST['truspilot_scrape_url'] ) ) : '';
-		$max_pages = isset( $_POST['truspilot_scrape_pages'] ) ? min( 50, max( 1, absint( $_POST['truspilot_scrape_pages'] ) ) ) : 5;
-
-		if ( ! $url || ! $this->is_allowed_trustpilot_url( $url ) ) {
-			$this->redirect_to_settings( array( 'truspilot_error' => 'invalid_url' ) );
-		}
-
-		if ( ! empty( $_POST['truspilot_clear_existing'] ) ) {
-			$this->importer->trash_existing();
-		}
-
-		$result   = $this->scraper->scrape( $url, $max_pages );
-		$imported = 0;
-
-		foreach ( $result['reviews'] as $review ) {
-			if ( $this->importer->insert_review( $review ) ) {
-				++$imported;
-			}
-		}
-
-		if ( 0 === $imported && ! empty( $result['error'] ) ) {
-			$this->redirect_to_settings( array( 'truspilot_error' => $result['error'] ) );
-		}
-
-		$this->redirect_to_settings( array( 'truspilot_scraped' => $imported ) );
-	}
-
-	/**
 	 * Custom review columns.
 	 *
 	 * @param array $columns Columns.
@@ -663,42 +579,18 @@ final class Truspilot_Review_Admin {
 	}
 
 	/**
-	 * Redirect back to settings.
-	 *
-	 * @param array $args Query args.
-	 */
-	private function redirect_to_settings( array $args ) {
-		wp_safe_redirect(
-			add_query_arg(
-				array_merge(
-					array(
-						'post_type' => self::POST_TYPE,
-						'page'      => 'truspilot-review',
-					),
-					$args
-				),
-				admin_url( 'edit.php' )
-			)
-		);
-		exit;
-	}
-
-	/**
-	 * Get readable admin error.
+	 * Get admin error message for the import flow.
 	 *
 	 * @param string $code Error code.
 	 * @return string
 	 */
 	private function get_admin_error_message( $code ) {
 		$messages = array(
-			'invalid_url'        => __( 'Please enter a valid public Trustpilot profile URL.', 'truspilot-review' ),
-			'request_failed'     => __( 'The scrape request failed before Trustpilot returned a page.', 'truspilot-review' ),
-			'trustpilot_blocked' => __( 'Trustpilot returned a browser verification page, so no reviews could be scraped from this server.', 'truspilot-review' ),
-			'http_error'         => __( 'Trustpilot returned an HTTP error while scraping reviews.', 'truspilot-review' ),
-			'no_reviews'         => __( 'No reviews were found in the public page data.', 'truspilot-review' ),
+			'invalid_url' => __( 'Please enter a valid public Trustpilot profile URL.', 'truspilot-review' ),
+			'no_reviews'  => __( 'No reviews were found in the imported data.', 'truspilot-review' ),
 		);
 
-		return isset( $messages[ $code ] ) ? $messages[ $code ] : __( 'Reviews could not be scraped.', 'truspilot-review' );
+		return isset( $messages[ $code ] ) ? $messages[ $code ] : __( 'An unknown error occurred during import.', 'truspilot-review' );
 	}
 
 	/**

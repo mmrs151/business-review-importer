@@ -26,13 +26,6 @@ final class Truspilot_Review_Plugin {
 	private $parser;
 
 	/**
-	 * Scraper instance.
-	 *
-	 * @var Truspilot_Review_Scraper
-	 */
-	private $scraper;
-
-	/**
 	 * Importer instance.
 	 *
 	 * @var Truspilot_Review_Importer
@@ -78,10 +71,9 @@ final class Truspilot_Review_Plugin {
 	 */
 	private function __construct() {
 		$this->parser   = new Truspilot_Review_Parser();
-		$this->scraper  = new Truspilot_Review_Scraper( $this->parser );
 		$this->importer = new Truspilot_Review_Importer( $this->parser );
 		$this->renderer = new Truspilot_Review_Renderer( $this );
-		$this->admin    = new Truspilot_Review_Admin( $this, $this->importer, $this->scraper );
+		$this->admin    = new Truspilot_Review_Admin( $this, $this->importer );
 
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'init', array( $this, 'register_assets' ) );
@@ -93,7 +85,6 @@ final class Truspilot_Review_Plugin {
 		add_action( 'add_meta_boxes', array( $this->admin, 'add_review_meta_boxes' ) );
 		add_action( 'save_post_' . self::POST_TYPE, array( $this->admin, 'save_review_meta' ), 10, 2 );
 		add_action( 'admin_post_truspilot_import_reviews', array( $this->admin, 'handle_import_reviews' ) );
-		add_action( 'admin_post_truspilot_scrape_reviews', array( $this->admin, 'handle_scrape_reviews' ) );
 		add_filter( 'manage_' . self::POST_TYPE . '_posts_columns', array( $this->admin, 'review_columns' ) );
 		add_action( 'manage_' . self::POST_TYPE . '_posts_custom_column', array( $this->admin, 'render_review_column' ), 10, 2 );
 		add_action( 'save_post_' . self::POST_TYPE, array( $this->renderer, 'flush_review_cache' ) );
@@ -235,6 +226,7 @@ final class Truspilot_Review_Plugin {
 			'total_reviews'    => 0,
 			'rating_label'     => '',
 			'card_background'  => '',
+			'default_title'    => 'Parent Reviews',
 		);
 	}
 }

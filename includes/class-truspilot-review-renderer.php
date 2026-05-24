@@ -41,6 +41,7 @@ final class Truspilot_Review_Renderer {
 	 * @return string
 	 */
 	public function shortcode( $atts ) {
+		$default_title = $this->plugin->get_settings()['default_title'];
 		$atts = shortcode_atts(
 			array(
 				'count'          => self::DEFAULT_COUNT,
@@ -48,11 +49,16 @@ final class Truspilot_Review_Renderer {
 				'autoplay'       => 'true',
 				'interval'       => 5500,
 				'full_page'      => 'false',
-				'title'          => __( 'Parent Reviews', 'truspilot-review' ),
-		),
-		(array) $atts,
-		'truspilot_reviews'
-	);
+				'title'          => $default_title ?: __( 'Parent Reviews', 'truspilot-review' ),
+				'min_rating'     => 1,
+				'featured_first' => 'true',
+				'grid_rows'      => 3,
+				'grid_columns'   => 3,
+				'wall_style'     => 'standard',
+			),
+			(array) $atts,
+			'truspilot_reviews'
+		);
 
 		return $this->render_reviews( $atts );
 	}
@@ -65,6 +71,7 @@ final class Truspilot_Review_Renderer {
 	 */
 	public function render_block( $attributes ) {
 		$attributes = is_array( $attributes ) ? $attributes : array();
+		$default_title = $this->plugin->get_settings()['default_title'];
 
 		return $this->render_reviews(
 			array(
@@ -73,7 +80,7 @@ final class Truspilot_Review_Renderer {
 				'autoplay'       => ! empty( $attributes['autoplay'] ) ? 'true' : 'false',
 				'interval'       => isset( $attributes['interval'] ) ? $attributes['interval'] : 5500,
 				'full_page'      => ! empty( $attributes['fullPage'] ) ? 'true' : 'false',
-				'title'          => isset( $attributes['title'] ) ? $attributes['title'] : __( 'Parent Reviews', 'truspilot-review' ),
+				'title'          => isset( $attributes['title'] ) ? $attributes['title'] : ( $default_title ?: __( 'Parent Reviews', 'truspilot-review' ) ),
 				'min_rating'     => isset( $attributes['minRating'] ) ? $attributes['minRating'] : 1,
 				'featured_first' => ! empty( $attributes['featuredFirst'] ) ? 'true' : 'false',
 				'grid_rows'      => isset( $attributes['gridRows'] ) ? $attributes['gridRows'] : 3,
