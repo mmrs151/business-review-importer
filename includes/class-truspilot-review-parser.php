@@ -168,7 +168,8 @@ final class Truspilot_Review_Parser {
 			'source_url' => '',
 			'country'    => isset( $review['country'] ) ? sanitize_text_field( $review['country'] ) : '',
 			'verified'   => true,
-			'featured'   => false,
+			'featured'   => true,
 		);
 	}
 }
+

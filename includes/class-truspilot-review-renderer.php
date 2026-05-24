@@ -412,7 +412,15 @@ final class Truspilot_Review_Renderer {
 		if ( ! empty( $settings['business_domain'] ) ) {
 			return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $settings['business_domain'] );
 		}
-
+		if ( ! empty( $settings['public_url'] ) ) {
+			$path = wp_parse_url( $settings['public_url'], PHP_URL_PATH );
+			if ( $path ) {
+				$domain = trim( str_replace( '/review/', '', $path ), '/' );
+				if ( $domain ) {
+					return 'https://uk.trustpilot.com/evaluate/' . sanitize_text_field( $domain );
+				}
+			}
+		}
 		return '';
 	}
 

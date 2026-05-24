@@ -116,7 +116,7 @@ final class Truspilot_Review_Importer {
 			'_truspilot_source_url'    => isset( $review['source_url'] ) ? esc_url_raw( $review['source_url'] ) : '',
 			'_truspilot_country'       => isset( $review['country'] ) ? sanitize_text_field( $review['country'] ) : '',
 			'_truspilot_short_excerpt' => '',
-			'_truspilot_featured'      => ! empty( $review['featured'] ) ? 1 : 0,
+			'_truspilot_featured'      => 1,
 			'_truspilot_verified'      => ! empty( $review['verified'] ) ? 1 : 0,
 			'_truspilot_import_hash'   => $hash,
 		);
