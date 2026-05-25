@@ -160,7 +160,7 @@ final class Truspilot_Review_Renderer {
 		?>
 		<section
 			class="<?php echo esc_attr( trim( implode( ' ', array_filter( $classes ) ) ) ); ?>"
-			<?php echo $section_style ? 'style="' . $section_style . '"' : ''; ?>
+			<?php echo $section_style ? 'style="' . esc_attr( $section_style ) . '"' : ''; ?>
 			data-truspilot-review
 			data-layout="<?php echo esc_attr( $layout ); ?>"
 			data-autoplay="<?php echo esc_attr( $autoplay ? 'true' : 'false' ); ?>"
