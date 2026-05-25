@@ -1,25 +1,25 @@
 # Truspilot Review Blocks
 
-A lightweight WordPress plugin for displaying locally saved Trustpilot-style reviews as a responsive carousel, grid, or full-page review wall.
+A lightweight WordPress plugin for displaying locally saved Trustpilot-style reviews as a responsive carousel, grid, full-page review wall, or scrollable list.
 
 ## Features
 
 - Local `Truspilot Review` custom post type for safe review storage.
 - Business profile settings for TrustScore, rating label, profile URL, and review count.
 - Easy browser import for pasted Trustpilot page source, copied public-profile review text, or JSON arrays.
-- Optional public-profile scraper that paginates Trustpilot pages and saves discovered reviews locally.
 - Shortcode aliases: `[truspilot_reviews]` and `[trustpilot_reviews]`.
 - Dynamic Gutenberg block with the same display controls.
-- Auto-rotating carousel with pause on hover/focus and reduced-motion support.
-- Responsive grid and full-page wall layouts for desktop and mobile.
-- Rating filter and featured-review prioritization.
+- Auto-rotating carousel with visible-count control, pause on hover/focus, and reduced-motion support.
+- Multiple layouts: carousel, grid with row/column control, full-page wall (standard or noticeboard), and scrollable list.
+- Rating filter, featured-review prioritization, and card background colour setting.
+- Individual review deep-linking to Trustpilot and linked summary / business name.
 - Security-first handling: capability checks, nonces, Settings API, post meta sanitization, escaped output, and no frontend remote fetching.
 
 ## Setup
 
 1. Go to **Truspilot Reviews > Settings & Import**.
 2. Save the business profile summary from the public Trustpilot profile.
-3. Use **Easy Browser Import**, **Automatic Public Scrape**, or add reviews manually under **Truspilot Reviews > Add Review**.
+3. Use **Easy Browser Import** or add reviews manually under **Truspilot Reviews > Add Review**.
 4. Place a shortcode or block on any page.
 
 ## Easy Browser Import
@@ -33,12 +33,6 @@ When server scraping is blocked, use your normal browser instead:
 5. Click **Extract & Import Reviews**.
 
 The plugin extracts reviews from `__NEXT_DATA__` or JSON-LD and stores them locally. You can repeat this for additional Trustpilot pages if needed.
-
-## Automatic Scrape
-
-The scraper follows the same public-page approach used by open-source projects such as `irfanalidv/trustpilot_scraper`: it requests `?page=1`, `?page=2`, and so on, reads Trustpilot's public `__NEXT_DATA__` or JSON-LD payload, normalizes reviews, deduplicates them, and saves them as local WordPress reviews.
-
-This is intentionally an admin-only manual action. Trustpilot may still return browser verification to some servers, in which case the plugin shows a clear admin error and leaves the frontend untouched.
 
 ## Import Format
 
@@ -71,7 +65,7 @@ JSON arrays are also supported:
 
 ```text
 [truspilot_reviews]
-[truspilot_reviews count="5" layout="carousel" autoplay="true" interval="6000"]
+[truspilot_reviews count="5" layout="carousel" autoplay="true" interval="6000" carousel_visible="2"]
 [truspilot_reviews count="12" layout="grid" min_rating="4" featured_first="true" grid_rows="3" grid_columns="4"]
 [truspilot_reviews count="24" layout="list" full_page="true"]
 [truspilot_reviews count="0" layout="wall" wall_style="noticeboard"]
@@ -83,6 +77,7 @@ JSON arrays are also supported:
 - `layout`: `carousel`, `grid`, `list`, or `wall`.
 - `autoplay`: `true` or `false`.
 - `interval`: Carousel rotation interval in milliseconds, from `2500` to `20000`.
+- `carousel_visible`: Number of reviews visible at once in the carousel, from `1` to `6`.
 - `full_page`: `true` expands the review section to full page width and height.
 - `title`: Section heading.
 - `min_rating`: Minimum review rating, from `1` to `5`.
@@ -93,4 +88,7 @@ JSON arrays are also supported:
 
 ## Notes
 
-The plugin intentionally renders from local WordPress content rather than scraping Trustpilot on the frontend. That keeps pages fast, avoids third-party proxy dependencies, and prevents visitor-facing failures when Trustpilot challenge-gates server-side requests.
+- Imported reviews are automatically marked as featured and given a link to their Trustpilot individual review page.
+- The evaluate ("Add yours here") URL is derived from your Trustpilot profile URL.
+- The summary section and business name link to your Trustpilot profile.
+- The plugin intentionally renders from local WordPress content rather than scraping Trustpilot on the frontend. That keeps pages fast, avoids third-party proxy dependencies, and prevents visitor-facing failures when Trustpilot challenge-gates server-side requests.
