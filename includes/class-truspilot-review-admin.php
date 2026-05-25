@@ -148,6 +148,7 @@ final class Truspilot_Review_Admin {
 			</form>
 
 			<hr />
+			<?php if ( trp_fs()->can_use_premium_code() ) : ?>
 			<h2><?php echo esc_html__( 'Easy Browser Import', 'truspilot-review' ); ?></h2>
 			<p><?php echo esc_html__( 'Open the Trustpilot profile in your browser, view the page source, copy all, and paste it here. The plugin will extract reviews from the public page data and save them locally.', 'truspilot-review' ); ?></p>
 			<ol>
@@ -167,6 +168,20 @@ final class Truspilot_Review_Admin {
 				</p>
 				<?php submit_button( __( 'Extract & Import Reviews', 'truspilot-review' ) ); ?>
 			</form>
+			<?php else : ?>
+			<div style="background:#eff6ff;border:1px solid #b8d4fe;border-radius:6px;padding:1.25rem 1.5rem;margin:1rem 0;">
+				<h2 style="margin-top:0;"><?php echo esc_html__( 'Easy Browser Import', 'truspilot-review' ); ?></h2>
+				<p style="font-size:1rem;"><?php echo esc_html__( 'Bulk import reviews from Trustpilot page source, JSON, or plain text.', 'truspilot-review' ); ?></p>
+				<p><?php echo esc_html__( 'This feature is available in the Pro version. Upgrade to unlock:', 'truspilot-review' ); ?></p>
+				<ul style="list-style:disc;padding-left:1.5rem;">
+					<li><?php echo esc_html__( 'Easy Browser Import (paste page source / JSON / text)', 'truspilot-review' ); ?></li>
+					<li><?php echo esc_html__( 'Carousel, Grid, Wall layouts', 'truspilot-review' ); ?></li>
+					<li><?php echo esc_html__( 'Unlimited reviews', 'truspilot-review' ); ?></li>
+					<li><?php echo esc_html__( 'Card links, linked summary, and more', 'truspilot-review' ); ?></li>
+				</ul>
+				<p><a class="button button-primary" href="<?php echo esc_url( trp_fs()->get_upgrade_url() ); ?>" target="_blank" rel="noopener"><?php echo esc_html__( 'Upgrade to Pro — 30-day free trial', 'truspilot-review' ); ?></a></p>
+			</div>
+			<?php endif; ?>
 
 			<h2><?php echo esc_html__( 'Shortcodes', 'truspilot-review' ); ?></h2>
 			<p><code>[truspilot_reviews count="3" layout="carousel" autoplay="true"]</code></p>
