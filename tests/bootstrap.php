@@ -2,7 +2,7 @@
 /**
  * Bootstrap for unit tests.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
 
 // Stub WordPress functions used by the plugin.
@@ -93,9 +93,9 @@ if ( ! function_exists( 'wp_strip_all_tags' ) ) {
 
 define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 define( 'WPINC', 'wp-includes' );
-define( 'TRUSPILOT_REVIEW_VERSION', '1.0.0' );
-define( 'TRUSPILOT_REVIEW_DIR', dirname( __DIR__ ) . '/' );
-define( 'TRUSPILOT_REVIEW_URL', 'https://example.com/wp-content/plugins/truspilot-review/' );
+define( 'BRI_VERSION', '1.0.0' );
+define( 'BRI_DIR', dirname( __DIR__ ) . '/' );
+define( 'BRI_URL', 'https://example.com/wp-content/plugins/business-review-importer/' );
 
 /**
  * Stub WordPress core functions.
@@ -137,9 +137,9 @@ if ( ! function_exists( 'wp_cache_set' ) ) {
 	}
 }
 
-require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-parser.php';
-require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-scraper.php';
-require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-importer.php';
-require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-renderer.php';
-require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-admin.php';
-require_once dirname( __DIR__ ) . '/includes/class-truspilot-review-plugin.php';
+require_once dirname( __DIR__ ) . '/includes/class-bri-parser.php';
+require_once dirname( __DIR__ ) . '/includes/class-bri-scraper.php';
+require_once dirname( __DIR__ ) . '/includes/class-bri-importer.php';
+require_once dirname( __DIR__ ) . '/includes/class-bri-renderer.php';
+require_once dirname( __DIR__ ) . '/includes/class-bri-admin.php';
+require_once dirname( __DIR__ ) . '/includes/class-bri-plugin.php';
