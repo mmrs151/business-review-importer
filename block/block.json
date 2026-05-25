@@ -55,6 +55,10 @@
 		"carouselVisible": {
 			"type": "number",
 			"default": 1
+		},
+		"orientation": {
+			"type": "string",
+			"default": "vertical"
 		}
 	},
 	"editorScript": "truspilot-review-block",

@@ -109,6 +109,16 @@ registerBlockType('truspilot-review/reviews', {
 							],
 							onChange: (value) => setAttributes({ wallStyle: value }),
 						}),
+					'list' === layout &&
+						createElement(SelectControl, {
+							label: 'Orientation',
+							value: attributes.orientation,
+							options: [
+								{ label: 'Vertical', value: 'vertical' },
+								{ label: 'Horizontal', value: 'horizontal' },
+							],
+							onChange: (value) => setAttributes({ orientation: value }),
+						}),
 					createElement(ToggleControl, {
 						label: 'Cover full page width',
 						checked: attributes.fullPage,
