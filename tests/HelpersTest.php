@@ -190,4 +190,22 @@ class HelpersTest extends TestCase {
 		);
 		$this->assertTrue( $result );
 	}
+
+	/** @test */
+	public function sanitize_choice_returns_default_for_invalid() {
+		$result = $this->call_private(
+			'sanitize_choice',
+			array( 'diagonal', array( 'vertical', 'horizontal' ), 'vertical' )
+		);
+		$this->assertSame( 'vertical', $result );
+	}
+
+	/** @test */
+	public function sanitize_choice_returns_valid_horizontal() {
+		$result = $this->call_private(
+			'sanitize_choice',
+			array( 'horizontal', array( 'vertical', 'horizontal' ), 'vertical' )
+		);
+		$this->assertSame( 'horizontal', $result );
+	}
 }

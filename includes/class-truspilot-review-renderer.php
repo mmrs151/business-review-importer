@@ -56,6 +56,7 @@ final class Truspilot_Review_Renderer {
 				'grid_columns'     => 3,
 				'wall_style'       => 'standard',
 				'carousel_visible' => 1,
+				'orientation'      => 'vertical',
 			),
 			(array) $atts,
 			'truspilot_reviews'
@@ -88,6 +89,7 @@ final class Truspilot_Review_Renderer {
 				'grid_columns'     => isset( $attributes['gridColumns'] ) ? $attributes['gridColumns'] : 3,
 				'wall_style'       => isset( $attributes['wallStyle'] ) ? $attributes['wallStyle'] : 'standard',
 				'carousel_visible' => isset( $attributes['carouselVisible'] ) ? $attributes['carouselVisible'] : 1,
+				'orientation'      => isset( $attributes['orientation'] ) ? $attributes['orientation'] : 'vertical',
 			)
 		);
 	}
@@ -111,7 +113,21 @@ final class Truspilot_Review_Renderer {
 		$grid_columns   = isset( $raw_atts['grid_columns'] ) ? min( 6, max( 1, absint( $raw_atts['grid_columns'] ) ) ) : 3;
 		$wall_style     = isset( $raw_atts['wall_style'] ) ? $this->sanitize_choice( $raw_atts['wall_style'], array( 'standard', 'noticeboard' ), 'standard' ) : 'standard';
 		$carousel_visible = isset( $raw_atts['carousel_visible'] ) ? min( 6, max( 1, absint( $raw_atts['carousel_visible'] ) ) ) : 1;
+		$orientation    = isset( $raw_atts['orientation'] ) ? $this->sanitize_choice( $raw_atts['orientation'], array( 'vertical', 'horizontal' ), 'vertical' ) : 'vertical';
 		$settings       = $this->plugin->get_settings();
+
+		if ( ! trp_fs()->can_use_premium_code() ) {
+			$layout         = 'list';
+			$count          = $count > 0 ? min( $count, 3 ) : 3;
+			$autoplay       = false;
+			$full_page      = false;
+			$featured_first = false;
+			$min_rating     = 1;
+			$grid_rows      = 3;
+			$grid_columns   = 3;
+			$wall_style     = 'standard';
+			$carousel_visible = 1;
+		}
 		$evaluate_url   = $this->get_evaluate_url( $settings );
 		$card_bg        = ! empty( $settings['card_background'] ) ? $settings['card_background'] : '';
 
@@ -146,6 +162,9 @@ final class Truspilot_Review_Renderer {
 		}
 		if ( 'wall' === $layout ) {
 			$classes[] = 'truspilot-review--wall-' . $wall_style;
+		}
+		if ( 'list' === $layout ) {
+			$classes[] = 'truspilot-review--list-' . $orientation;
 		}
 
 		$section_style = '';
