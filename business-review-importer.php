@@ -18,6 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( function_exists( 'wp_installing' ) && wp_installing() ) {
+	ob_start();
+	register_shutdown_function( 'ob_end_clean' );
+}
+
 define( 'BRI_VERSION', '2026.05.25' );
 define( 'BRI_FILE', __FILE__ );
 define( 'BRI_DIR', plugin_dir_path( __FILE__ ) );
