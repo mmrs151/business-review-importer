@@ -1,11 +1,6 @@
 name: Deploy to Freemius
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to deploy (e.g. 2026.05.26)'
-        required: true
   push:
     tags:
       - 'v*'
@@ -22,12 +17,7 @@ jobs:
 
       - name: Set version
         id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Build plugin ZIP
         run: |
