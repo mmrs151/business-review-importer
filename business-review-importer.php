@@ -18,6 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+ob_start();
+
 define( 'BRI_VERSION', '2026.05.25' );
 define( 'BRI_FILE', __FILE__ );
 define( 'BRI_DIR', plugin_dir_path( __FILE__ ) );
@@ -90,10 +92,11 @@ if ( ! function_exists( 'bri_fs' ) ) {
 						'days'               => 30,
 						'is_require_payment' => false,
 					),
-					'menu'                => array(
-						'slug'    => 'business-review-importer',
-						'support' => false,
-					),
+				'menu'                => array(
+					'slug'    => 'edit.php?post_type=bri_review',
+					'first-path' => 'admin.php?page=business-review-importer',
+					'support' => false,
+				),
 					'after_uninstall'     => true,
 				)
 			);
@@ -162,3 +165,5 @@ require_once BRI_DIR . 'includes/class-bri-admin.php';
 require_once BRI_DIR . 'includes/class-bri-plugin.php';
 
 add_action( 'plugins_loaded', array( 'BRI_Plugin', 'instance' ) );
+
+ob_end_clean();
