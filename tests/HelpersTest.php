@@ -1,9 +1,13 @@
 <?php
 /**
- * Tests for pure helper methods in Truspilot_Review_Renderer.
+ * Tests for pure helper methods in BRI_Renderer.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +18,7 @@ class HelpersTest extends TestCase {
 	/**
 	 * Renderer instance.
 	 *
-	 * @var Truspilot_Review_Renderer
+	 * @var BRI_Renderer
 	 */
 	private $renderer;
 
@@ -24,9 +28,9 @@ class HelpersTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		$ref            = new ReflectionMethod( Truspilot_Review_Plugin::class, 'instance' );
+		$ref            = new ReflectionMethod( BRI_Plugin::class, 'instance' );
 		$plugin         = $ref->invoke( null );
-		$this->renderer = new Truspilot_Review_Renderer( $plugin );
+		$this->renderer = new BRI_Renderer( $plugin );
 	}
 
 	/**
@@ -37,7 +41,7 @@ class HelpersTest extends TestCase {
 	 * @return mixed
 	 */
 	private function call_private( $name, array $args = array() ) {
-		$method = new ReflectionMethod( Truspilot_Review_Renderer::class, $name );
+		$method = new ReflectionMethod( BRI_Renderer::class, $name );
 		$method->setAccessible( true );
 
 		return $method->invokeArgs( $this->renderer, $args );

@@ -10,7 +10,7 @@
 	var PanelBody = components.PanelBody;
 	var ServerSideRender = serverSideRender;
 
-	blocks.registerBlockType('truspilot-review/reviews', {
+	blocks.registerBlockType('business-review-importer/reviews', {
 		edit: function (props) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
@@ -37,16 +37,17 @@
 							options: [
 								{ label: 'Carousel', value: 'carousel' },
 								{ label: 'Grid', value: 'grid' },
-								{ label: 'Full review wall', value: 'wall' },
+								{ label: 'List', value: 'list' },
+								{ label: 'Wall (full page)', value: 'wall' },
 							],
 							onChange: function (value) {
 								setAttributes({ layout: value });
 							},
 						}),
 						el(RangeControl, {
-							label: 'Reviews to show',
+							label: 'Reviews to show (0 = all featured)',
 							value: attributes.count,
-							min: 1,
+							min: 0,
 							max: 48,
 							onChange: function (value) {
 								setAttributes({ count: value });
@@ -63,14 +64,21 @@
 							},
 						}),
 						el(ToggleControl, {
+							label: 'Show featured reviews first',
+							checked: attributes.featuredFirst,
+							onChange: function (value) {
+								setAttributes({ featuredFirst: value });
+							},
+						}),
+						attributes.layout === 'carousel' && el(ToggleControl, {
 							label: 'Auto rotate reviews',
 							checked: attributes.autoplay,
 							onChange: function (value) {
 								setAttributes({ autoplay: value });
 							},
 						}),
-						el(RangeControl, {
-							label: 'Rotation speed',
+						attributes.layout === 'carousel' && el(RangeControl, {
+							label: 'Rotation speed (ms)',
 							value: attributes.interval,
 							min: 2500,
 							max: 20000,
@@ -79,11 +87,53 @@
 								setAttributes({ interval: value });
 							},
 						}),
-						el(ToggleControl, {
-							label: 'Show featured reviews first',
-							checked: attributes.featuredFirst,
+						attributes.layout === 'carousel' && el(RangeControl, {
+							label: 'Visible reviews at once',
+							value: attributes.carouselVisible,
+							min: 1,
+							max: 6,
 							onChange: function (value) {
-								setAttributes({ featuredFirst: value });
+								setAttributes({ carouselVisible: value });
+							},
+						}),
+						attributes.layout === 'grid' && el(RangeControl, {
+							label: 'Grid rows',
+							value: attributes.gridRows,
+							min: 1,
+							max: 6,
+							onChange: function (value) {
+								setAttributes({ gridRows: value });
+							},
+						}),
+						attributes.layout === 'grid' && el(RangeControl, {
+							label: 'Grid columns',
+							value: attributes.gridColumns,
+							min: 1,
+							max: 6,
+							onChange: function (value) {
+								setAttributes({ gridColumns: value });
+							},
+						}),
+						attributes.layout === 'wall' && el(SelectControl, {
+							label: 'Wall style',
+							value: attributes.wallStyle,
+							options: [
+								{ label: 'Standard', value: 'standard' },
+								{ label: 'Noticeboard', value: 'noticeboard' },
+							],
+							onChange: function (value) {
+								setAttributes({ wallStyle: value });
+							},
+						}),
+						attributes.layout === 'list' && el(SelectControl, {
+							label: 'Orientation',
+							value: attributes.orientation,
+							options: [
+								{ label: 'Vertical', value: 'vertical' },
+								{ label: 'Horizontal', value: 'horizontal' },
+							],
+							onChange: function (value) {
+								setAttributes({ orientation: value });
 							},
 						}),
 						el(ToggleControl, {
@@ -96,7 +146,7 @@
 					)
 				),
 				el(ServerSideRender, {
-					block: 'truspilot-review/reviews',
+					block: 'business-review-importer/reviews',
 					attributes: attributes,
 				})
 			);

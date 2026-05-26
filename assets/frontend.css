@@ -1,32 +1,32 @@
-.truspilot-review {
-	--trp-bg: #ffffff;
-	--trp-ink: #17252f;
-	--trp-muted: #64717c;
-	--trp-line: #dfe7e2;
-	--trp-green: #00b67a;
-	--trp-green-dark: #008f60;
-	--trp-soft: #f4faf7;
-	--trp-shadow: 0 18px 55px rgba(23, 37, 47, 0.12);
+.business-review-importer {
+	--bri-bg: #ffffff;
+	--bri-ink: #17252f;
+	--bri-muted: #64717c;
+	--bri-line: #dfe7e2;
+	--bri-green: #00b67a;
+	--bri-green-dark: #008f60;
+	--bri-soft: #f4faf7;
+	--bri-shadow: 0 18px 55px rgba(23, 37, 47, 0.12);
 	box-sizing: border-box;
 	width: min(100%, 1120px);
 	margin: 2rem auto;
 	padding: clamp(1rem, 3vw, 2rem);
-	color: var(--trp-ink);
+	color: var(--bri-ink);
 	background:
 		linear-gradient(135deg, rgba(0, 182, 122, 0.11), rgba(255, 255, 255, 0) 42%),
-		var(--trp-bg);
-	border: 1px solid var(--trp-line);
+		var(--bri-bg);
+	border: 1px solid var(--bri-line);
 	border-radius: 8px;
-	box-shadow: var(--trp-shadow);
+	box-shadow: var(--bri-shadow);
 }
 
-.truspilot-review *,
-.truspilot-review *::before,
-.truspilot-review *::after {
+.business-review-importer *,
+.business-review-importer *::before,
+.business-review-importer *::after {
 	box-sizing: border-box;
 }
 
-.truspilot-review--full {
+.bri-full {
 	width: 100%;
 	max-width: none;
 	min-height: 100vh;
@@ -36,7 +36,7 @@
 	border-radius: 0;
 }
 
-.truspilot-review__header {
+.bri-header {
 	display: flex;
 	gap: 1rem;
 	align-items: flex-start;
@@ -44,37 +44,37 @@
 	margin-bottom: clamp(1rem, 3vw, 1.5rem);
 }
 
-.truspilot-review__title {
+.bri-title {
 	margin: 0;
-	color: var(--trp-ink);
+	color: var(--bri-ink);
 	font-size: clamp(1.45rem, 2vw, 2.2rem);
 	font-weight: 760;
 	line-height: 1.08;
 	letter-spacing: 0;
 }
 
-.truspilot-review__business {
+.bri-business {
 	display: inline-block;
 	margin: 0.35rem 0 0;
-	color: var(--trp-muted);
+	color: var(--bri-muted);
 	font-size: 0.98rem;
 	text-decoration: none;
 }
 
-a.truspilot-review__business:hover,
-a.truspilot-review__business:focus {
-	color: var(--trp-green-dark);
+a.bri-business:hover,
+a.bri-business:focus {
+	color: var(--bri-green-dark);
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
 
-.truspilot-review__source {
+.bri-source {
 	display: inline-flex;
 	flex: 0 0 auto;
 	align-items: center;
 	min-height: 2.4rem;
 	padding: 0.55rem 0.8rem;
-	color: var(--trp-green-dark);
+	color: var(--bri-green-dark);
 	font-size: 0.85rem;
 	font-weight: 700;
 	line-height: 1;
@@ -84,26 +84,26 @@ a.truspilot-review__business:focus {
 	border-radius: 8px;
 }
 
-.truspilot-review__source:hover,
-.truspilot-review__source:focus {
+.bri-source:hover,
+.bri-source:focus {
 	color: #005f42;
 	text-decoration: none;
-	border-color: var(--trp-green);
+	border-color: var(--bri-green);
 	outline: 2px solid transparent;
 }
 
-.truspilot-review__viewport {
+.bri-viewport {
 	overflow: hidden;
 }
 
-.truspilot-review__summary {
+.bri-summary {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.6rem 1.2rem;
 	align-items: center;
 	margin: -0.25rem 0 1.15rem;
 	padding: 1rem 1.35rem;
-	background: var(--trp-soft);
+	background: var(--bri-soft);
 	border: 1px solid #cdeee0;
 	border-radius: 10px;
 	text-decoration: none;
@@ -111,60 +111,60 @@ a.truspilot-review__business:focus {
 	transition: border-color 150ms, box-shadow 150ms;
 }
 
-a.truspilot-review__summary:hover,
-a.truspilot-review__summary:focus {
-	border-color: var(--trp-green);
+a.bri-summary:hover,
+a.bri-summary:focus {
+	border-color: var(--bri-green);
 	box-shadow: 0 0 0 3px rgba(0, 182, 122, 0.12);
 	outline: 2px solid transparent;
 }
 
-.truspilot-review__score {
+.bri-score {
 	display: flex;
 	gap: 0.5rem;
 	align-items: baseline;
-	color: var(--trp-ink);
+	color: var(--bri-ink);
 }
 
-.truspilot-review__score strong {
+.bri-score strong {
 	font-size: 0.98rem;
 	font-weight: 600;
 	letter-spacing: 0.01em;
 	text-transform: uppercase;
-	color: var(--trp-muted);
+	color: var(--bri-muted);
 }
 
-.truspilot-review__score span {
-	color: var(--trp-ink);
+.bri-score span {
+	color: var(--bri-ink);
 	font-size: 1.85rem;
 	font-weight: 780;
 	line-height: 1.1;
 	letter-spacing: -0.02em;
 }
 
-.truspilot-review__count {
-	color: var(--trp-muted);
+.bri-count {
+	color: var(--bri-muted);
 	font-size: 1rem;
 	font-weight: 500;
 }
 
-.truspilot-review__summary .truspilot-review__rating {
+.bri-summary .bri-rating {
 	margin-bottom: 0;
 }
 
-.truspilot-review__summary .truspilot-review__star {
+.bri-summary .bri-star {
 	width: 1.65rem;
 	height: 1.65rem;
 	font-size: 1rem;
 }
 
-.truspilot-review__track {
+.bri-track {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 1rem;
 	align-items: start;
 }
 
-.truspilot-review--carousel .truspilot-review__track {
+.bri-carousel .bri-track {
 	display: flex;
 	align-items: stretch;
 	gap: 0;
@@ -172,30 +172,30 @@ a.truspilot-review__summary:focus {
 	will-change: transform;
 }
 
-.truspilot-review--grid-cols-2 .truspilot-review__track {
+.bri-grid-cols-2 .bri-track {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.truspilot-review--grid-cols-3 .truspilot-review__track {
+.bri-grid-cols-3 .bri-track {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-.truspilot-review--grid-cols-4 .truspilot-review__track {
+.bri-grid-cols-4 .bri-track {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 }
-.truspilot-review--grid-cols-5 .truspilot-review__track {
+.bri-grid-cols-5 .bri-track {
 	grid-template-columns: repeat(5, minmax(0, 1fr));
 }
-.truspilot-review--grid-cols-6 .truspilot-review__track {
+.bri-grid-cols-6 .bri-track {
 	grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 /* grid aspect ratio squares */
-.truspilot-review--grid .truspilot-review__card {
+.bri-grid .bri-card {
 	aspect-ratio: 1;
 	overflow: hidden;
 }
 
-.truspilot-review--grid .truspilot-review__review-title,
-.truspilot-review--wall .truspilot-review__review-title {
+.bri-grid .bri-review-title,
+.bri-wall .bri-review-title {
 	overflow: hidden;
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
@@ -204,7 +204,7 @@ a.truspilot-review__summary:focus {
 }
 
 /* list layout: simple scrollable vertical list */
-.truspilot-review--list .truspilot-review__track {
+.bri-list .bri-track {
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
@@ -213,23 +213,23 @@ a.truspilot-review__summary:focus {
 	padding-right: 0.25rem;
 }
 
-.truspilot-review--list .truspilot-review__card {
+.bri-list .bri-card {
 	width: 100%;
 }
 
-.truspilot-review--list .truspilot-review__body {
+.bri-list .bri-body {
 	display: -webkit-box;
 	overflow: hidden;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 6;
 }
 
-.truspilot-review--list .truspilot-review__viewport {
+.bri-list .bri-viewport {
 	overflow-y: auto;
 }
 
 /* horizontal list: scrollable row */
-.truspilot-review--list-horizontal .truspilot-review__track {
+.bri-list-horizontal .bri-track {
 	flex-direction: row;
 	flex-wrap: nowrap;
 	overflow-x: auto;
@@ -239,31 +239,31 @@ a.truspilot-review__summary:focus {
 	-webkit-overflow-scrolling: touch;
 }
 
-.truspilot-review--list-horizontal .truspilot-review__card {
+.bri-list-horizontal .bri-card {
 	flex: 0 0 320px;
 	scroll-snap-align: start;
 }
 
-.truspilot-review--list-horizontal .truspilot-review__viewport {
+.bri-list-horizontal .bri-viewport {
 	overflow: hidden;
 }
 
 /* wall layout base */
-.truspilot-review--wall {
+.bri-wall {
 	border: none;
 	background: none;
 	box-shadow: none;
 	padding: 0;
 }
 
-.truspilot-review--full.truspilot-review--wall {
+.bri-full.bri-wall {
 	background:
 		linear-gradient(135deg, rgba(0, 182, 122, 0.11), rgba(255, 255, 255, 0) 42%),
-		var(--trp-bg);
+		var(--bri-bg);
 }
 
 /* wall standard: cards scattered all over the page */
-.truspilot-review--wall-standard .truspilot-review__track {
+.bri-wall-standard .bri-track {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1.2rem;
@@ -272,7 +272,7 @@ a.truspilot-review__summary:focus {
 	align-items: flex-start;
 }
 
-.truspilot-review--wall-standard .truspilot-review__card {
+.bri-wall-standard .bri-card {
 	width: 260px;
 	flex: 0 0 auto;
 	aspect-ratio: 3 / 4;
@@ -280,24 +280,24 @@ a.truspilot-review__summary:focus {
 }
 
 /* Organic staggered offsets for scattered-wall feel */
-.truspilot-review--wall-standard .truspilot-review__card:nth-child(odd) {
+.bri-wall-standard .bri-card:nth-child(odd) {
 	margin-top: 1.5rem;
 }
 
-.truspilot-review--wall-standard .truspilot-review__card:nth-child(3n+2) {
+.bri-wall-standard .bri-card:nth-child(3n+2) {
 	margin-top: 0.75rem;
 }
 
-.truspilot-review--wall-standard .truspilot-review__card:nth-child(4n+3) {
+.bri-wall-standard .bri-card:nth-child(4n+3) {
 	margin-top: 2.5rem;
 }
 
-.truspilot-review--wall-standard .truspilot-review__card:nth-child(5n+4) {
+.bri-wall-standard .bri-card:nth-child(5n+4) {
 	margin-top: 0.25rem;
 }
 
 /* wall noticeboard: post-it tiles */
-.truspilot-review--wall-noticeboard .truspilot-review__track {
+.bri-wall-noticeboard .bri-track {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1.8rem;
@@ -306,15 +306,15 @@ a.truspilot-review__summary:focus {
 	align-items: flex-start;
 }
 
-.truspilot-review--wall-noticeboard .truspilot-review__viewport {
+.bri-wall-noticeboard .bri-viewport {
 	overflow: visible;
 }
 
-.truspilot-review--wall-noticeboard .truspilot-review__card {
+.bri-wall-noticeboard .bri-card {
 	position: relative;
 	width: 250px;
 	padding: 1.5rem 1.5rem 1rem;
-	background: var(--trp-card-bg, #f1faff);
+	background: var(--bri-card-bg, #f1faff);
 	border: 1px solid #bdd7e6;
 	border-radius: 2px;
 	aspect-ratio: 0;
@@ -323,12 +323,12 @@ a.truspilot-review__summary:focus {
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.truspilot-review--wall-noticeboard .truspilot-review__card:hover {
+.bri-wall-noticeboard .bri-card:hover {
 	box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.14);
 }
 
 /* Pin (thumbtack) via pseudo-element */
-.truspilot-review--wall-noticeboard .truspilot-review__card::before {
+.bri-wall-noticeboard .bri-card::before {
 	content: '';
 	position: absolute;
 	top: -10px;
@@ -343,39 +343,38 @@ a.truspilot-review__summary:focus {
 }
 
 /* Deterministic rotation per card index (cycles every 6) */
-.truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+1) { transform: rotate(-2deg); }
-.truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+2) { transform: rotate(3.5deg); }
-.truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+3) { transform: rotate(-1.5deg); }
-.truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+4) { transform: rotate(2deg); }
-.truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+5) { transform: rotate(-3.5deg); }
-.truspilot-review--wall-noticeboard .truspilot-review__card:nth-child(6n+6) { transform: rotate(1.5deg); }
+.bri-wall-noticeboard .bri-card:nth-child(6n+1) { transform: rotate(-2deg); }
+.bri-wall-noticeboard .bri-card:nth-child(6n+2) { transform: rotate(3.5deg); }
+.bri-wall-noticeboard .bri-card:nth-child(6n+3) { transform: rotate(-1.5deg); }
+.bri-wall-noticeboard .bri-card:nth-child(6n+4) { transform: rotate(2deg); }
+.bri-wall-noticeboard .bri-card:nth-child(6n+5) { transform: rotate(-3.5deg); }
+.bri-wall-noticeboard .bri-card:nth-child(6n+6) { transform: rotate(1.5deg); }
 
 /* Larger summary text for wall-noticeboard */
-.truspilot-review--wall-noticeboard .truspilot-review__summary {
+.bri-wall-noticeboard .bri-summary {
 	padding: 1.1rem 1.5rem;
 }
 
-.truspilot-review--wall-noticeboard .truspilot-review__summary .truspilot-review__score span {
+.bri-wall-noticeboard .bri-summary .bri-score span {
 	font-size: 2rem;
 }
 
-.truspilot-review__card {
+.bri-card {
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
 	padding: clamp(1rem, 2.5vw, 1.35rem);
-	background: var(--trp-card-bg, rgba(255, 255, 255, 0.92));
+	background: var(--bri-card-bg, rgba(255, 255, 255, 0.92));
 	border: 1px solid rgba(0, 182, 122, 0.18);
 	border-radius: 8px;
 	box-shadow: 0 10px 28px rgba(23, 37, 47, 0.08);
 }
 
-.truspilot-review__card--linked {
+.bri-card--linked {
 	padding: 0;
-	overflow: hidden;
 }
 
-a.truspilot-review__card-link {
+a.bri-card-link {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
@@ -385,70 +384,82 @@ a.truspilot-review__card-link {
 	transition: background 120ms, box-shadow 120ms;
 }
 
-a.truspilot-review__card-link:hover,
-a.truspilot-review__card-link:focus {
+a.bri-card-link:hover,
+a.bri-card-link:focus {
 	background: rgba(0, 182, 122, 0.03);
 	box-shadow: inset 0 0 0 2px rgba(0, 182, 122, 0.2);
 	outline: 2px solid transparent;
 }
 
-.truspilot-review--carousel .truspilot-review__card {
-	flex: 0 0 calc(100% / var(--trp-visible, 1));
+.bri-carousel .bri-card {
+	flex: 0 0 calc(100% / var(--bri-visible, 1));
 	min-height: 15.5rem;
 	align-self: stretch;
+	border: none;
+	box-shadow: 0 4px 24px rgba(23, 37, 47, 0.06);
+	transition: box-shadow 200ms, transform 200ms;
+}
+
+.bri-carousel .bri-card:hover {
+	box-shadow: 0 8px 32px rgba(23, 37, 47, 0.1);
+	transform: translateY(-2px);
+}
+
+.bri-carousel .bri-card-link > .bri-body {
+	flex: 1;
 }
 
 /* Empty placeholder card */
-.truspilot-review__card--empty {
+.bri-card--empty {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-height: 140px;
-	border: 2px dashed var(--trp-line);
+	border: 2px dashed var(--bri-line);
 	background: transparent;
 	box-shadow: none;
 }
 
-.truspilot-review__card--empty .truspilot-review__empty {
+.bri-card--empty .bri-empty {
 	text-align: center;
-	color: var(--trp-muted);
+	color: var(--bri-muted);
 	font-style: italic;
 }
 
-.truspilot-review__card--empty .truspilot-review__empty a {
-	color: var(--trp-green-dark);
+.bri-card--empty .bri-empty a {
+	color: var(--bri-green-dark);
 	font-size: 0.95rem;
 	font-weight: 700;
 	text-decoration: underline;
 	text-underline-offset: 3px;
 }
 
-.truspilot-review__card--empty .truspilot-review__empty a:hover,
-.truspilot-review__card--empty .truspilot-review__empty a:focus {
+.bri-card--empty .bri-empty a:hover,
+.bri-card--empty .bri-empty a:focus {
 	color: #005f42;
 }
 
-.truspilot-review__card--empty .truspilot-review__empty p {
+.bri-card--empty .bri-empty p {
 	margin: 0;
 	font-size: 0.95rem;
 }
 
-.truspilot-review--grid .truspilot-review__body,
-.truspilot-review--carousel .truspilot-review__body,
-.truspilot-review--wall .truspilot-review__body {
+.bri-grid .bri-body,
+.bri-carousel .bri-body,
+.bri-wall .bri-body {
 	display: -webkit-box;
 	overflow: hidden;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 5;
 }
 
-.truspilot-review__rating {
+.bri-rating {
 	display: flex;
 	gap: 0.18rem;
 	margin-bottom: 0.9rem;
 }
 
-.truspilot-review__star {
+.bri-star {
 	display: inline-grid;
 	place-items: center;
 	width: 1.38rem;
@@ -460,39 +471,39 @@ a.truspilot-review__card-link:focus {
 	border-radius: 3px;
 }
 
-.truspilot-review__star.is-filled {
-	background: var(--trp-green);
+.bri-star.is-filled {
+	background: var(--bri-green);
 }
 
-.truspilot-review__review-title {
+.bri-review-title {
 	margin: 0 0 0.65rem;
-	color: var(--trp-ink);
+	color: var(--bri-ink);
 	font-size: 1.08rem;
 	font-weight: 760;
 	line-height: 1.24;
 	letter-spacing: 0;
 }
 
-.truspilot-review__body {
+.bri-body {
 	margin: 0;
 	color: #31424d;
 	font-size: 1rem;
 	line-height: 1.58;
 }
 
-.truspilot-review__badges {
+.bri-badges {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.4rem;
 	margin-top: 0.9rem;
 }
 
-.truspilot-review__badges span {
+.bri-badges span {
 	display: inline-flex;
 	align-items: center;
 	min-height: 1.55rem;
 	padding: 0.25rem 0.48rem;
-	color: var(--trp-green-dark);
+	color: var(--bri-green-dark);
 	font-size: 0.78rem;
 	font-weight: 700;
 	line-height: 1;
@@ -501,79 +512,87 @@ a.truspilot-review__card-link:focus {
 	border-radius: 999px;
 }
 
-.truspilot-review__meta {
+.bri-meta {
 	display: flex;
 	gap: 0.5rem;
 	align-items: center;
 	justify-content: space-between;
 	margin-top: auto;
 	padding-top: 1rem;
-	color: var(--trp-muted);
+	color: var(--bri-muted);
 	font-size: 0.88rem;
-	border-top: 1px solid var(--trp-line);
+	border-top: 1px solid var(--bri-line);
 }
 
-.truspilot-review__meta span {
+.bri-meta span {
 	overflow: hidden;
 	font-weight: 700;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.truspilot-review__controls {
+.bri-controls {
 	display: flex;
 	gap: 0.8rem;
 	align-items: center;
 	justify-content: center;
-	margin-top: 1.1rem;
+	margin-top: 1.25rem;
 }
 
-.truspilot-review__button {
+.bri-button {
 	display: inline-grid;
 	place-items: center;
-	width: 2.55rem;
-	height: 2.55rem;
+	width: 2.4rem;
+	height: 2.4rem;
 	padding: 0;
-	color: var(--trp-ink);
-	font-size: 1.45rem;
+	color: var(--bri-muted);
+	font-size: 1.3rem;
+	font-weight: 700;
 	line-height: 1;
-	background: #ffffff;
-	border: 1px solid var(--trp-line);
+	background: var(--bri-bg);
+	border: 1px solid var(--bri-line);
 	border-radius: 50%;
 	cursor: pointer;
+	transition: all 180ms ease;
 }
 
-.truspilot-review__button:hover,
-.truspilot-review__button:focus {
+.bri-button:hover,
+.bri-button:focus {
 	color: #ffffff;
-	background: var(--trp-green);
-	border-color: var(--trp-green);
+	background: var(--bri-green);
+	border-color: var(--bri-green);
+	box-shadow: 0 4px 12px rgba(0, 182, 122, 0.3);
 	outline: 2px solid transparent;
 }
 
-.truspilot-review__dots {
+.bri-dots {
 	display: flex;
-	gap: 0.38rem;
+	gap: 0.4rem;
 	align-items: center;
 }
 
-.truspilot-review__dot {
-	width: 0.55rem;
-	height: 0.55rem;
+.bri-dot {
+	width: 0.5rem;
+	height: 0.5rem;
 	padding: 0;
-	background: #b8c5bf;
+	background: #cbd5cf;
 	border: 0;
 	border-radius: 50%;
 	cursor: pointer;
+	transition: all 240ms ease;
 }
 
-.truspilot-review__dot.is-active {
-	width: 1.35rem;
-	background: var(--trp-green);
+.bri-dot:hover {
+	background: var(--bri-green);
+}
+
+.bri-dot.is-active {
+	width: 1.5rem;
+	background: var(--bri-green);
 	border-radius: 999px;
 }
 
-.truspilot-review-notice {
+.bri-notice {
 	padding: 0.8rem 1rem;
 	color: #5b4300;
 	background: #fff8df;
@@ -581,68 +600,68 @@ a.truspilot-review__card-link:focus {
 }
 
 @media (max-width: 840px) {
-	.truspilot-review__track {
+	.bri-track {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.truspilot-review--grid-cols-4 .truspilot-review__track,
-	.truspilot-review--grid-cols-5 .truspilot-review__track,
-	.truspilot-review--grid-cols-6 .truspilot-review__track {
+	.bri-grid-cols-4 .bri-track,
+	.bri-grid-cols-5 .bri-track,
+	.bri-grid-cols-6 .bri-track {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
-	.truspilot-review--wall-noticeboard .truspilot-review__card {
+	.bri-wall-noticeboard .bri-card {
 		width: 200px;
 	}
 
-	.truspilot-review--wall-standard .truspilot-review__card {
+	.bri-wall-standard .bri-card {
 		width: 200px;
 	}
 }
 
 @media (max-width: 640px) {
-	.truspilot-review {
+	.business-review-importer {
 		margin: 1rem auto;
 		border-right: 0;
 		border-left: 0;
 		border-radius: 0;
 	}
 
-	.truspilot-review__header {
+	.bri-header {
 		display: grid;
 	}
 
-	.truspilot-review__source {
+	.bri-source {
 		justify-content: center;
 		width: 100%;
 	}
 
-	.truspilot-review__track {
+	.bri-track {
 		grid-template-columns: 1fr;
 	}
 
-	.truspilot-review--grid-cols-2 .truspilot-review__track,
-	.truspilot-review--grid-cols-3 .truspilot-review__track,
-	.truspilot-review--grid-cols-4 .truspilot-review__track,
-	.truspilot-review--grid-cols-5 .truspilot-review__track,
-	.truspilot-review--grid-cols-6 .truspilot-review__track {
+	.bri-grid-cols-2 .bri-track,
+	.bri-grid-cols-3 .bri-track,
+	.bri-grid-cols-4 .bri-track,
+	.bri-grid-cols-5 .bri-track,
+	.bri-grid-cols-6 .bri-track {
 		grid-template-columns: 1fr;
 	}
 
-	.truspilot-review__card {
+	.bri-card {
 		min-height: 0;
 	}
 
-	.truspilot-review--wall-noticeboard .truspilot-review__card,
-	.truspilot-review--wall-standard .truspilot-review__card {
+	.bri-wall-noticeboard .bri-card,
+	.bri-wall-standard .bri-card {
 		width: 100%;
 		max-width: 320px;
 	}
 
-	.truspilot-review--wall-standard .truspilot-review__card:nth-child(odd),
-	.truspilot-review--wall-standard .truspilot-review__card:nth-child(3n+2),
-	.truspilot-review--wall-standard .truspilot-review__card:nth-child(4n+3),
-	.truspilot-review--wall-standard .truspilot-review__card:nth-child(5n+4) {
+	.bri-wall-standard .bri-card:nth-child(odd),
+	.bri-wall-standard .bri-card:nth-child(3n+2),
+	.bri-wall-standard .bri-card:nth-child(4n+3),
+	.bri-wall-standard .bri-card:nth-child(5n+4) {
 		margin-top: 0;
 	}
 }

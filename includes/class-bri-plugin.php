@@ -2,7 +2,7 @@
 /**
  * Main plugin class.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,37 +12,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers local reviews, settings, shortcode, block, and assets.
  */
-final class Truspilot_Review_Plugin {
-	const OPTION_NAME   = 'truspilot_review_settings';
-	const POST_TYPE     = 'truspilot_review';
+final class BRI_Plugin {
+	const OPTION_NAME   = 'bri_settings';
+	const POST_TYPE     = 'bri_review';
 	const MAX_REVIEWS   = 48;
 	const DEFAULT_COUNT = 3;
 
 	/**
 	 * HTML parser instance.
 	 *
-	 * @var Truspilot_Review_Parser
+	 * @var BRI_Parser
 	 */
 	private $parser;
 
 	/**
 	 * Importer instance.
 	 *
-	 * @var Truspilot_Review_Importer
+	 * @var BRI_Importer
 	 */
 	private $importer;
 
 	/**
 	 * Renderer instance.
 	 *
-	 * @var Truspilot_Review_Renderer
+	 * @var BRI_Renderer
 	 */
 	private $renderer;
 
 	/**
 	 * Admin instance.
 	 *
-	 * @var Truspilot_Review_Admin
+	 * @var BRI_Admin
 	 */
 	private $admin;
 
@@ -70,10 +70,10 @@ final class Truspilot_Review_Plugin {
 	 * Wire WordPress hooks.
 	 */
 	private function __construct() {
-		$this->parser   = new Truspilot_Review_Parser();
-		$this->importer = new Truspilot_Review_Importer( $this->parser );
-		$this->renderer = new Truspilot_Review_Renderer( $this );
-		$this->admin    = new Truspilot_Review_Admin( $this, $this->importer );
+		$this->parser   = new BRI_Parser();
+		$this->importer = new BRI_Importer( $this->parser );
+		$this->renderer = new BRI_Renderer( $this );
+		$this->admin    = new BRI_Admin( $this, $this->importer );
 
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'init', array( $this, 'register_assets' ) );
@@ -84,7 +84,7 @@ final class Truspilot_Review_Plugin {
 		add_action( 'admin_menu', array( $this->admin, 'register_admin_page' ) );
 		add_action( 'add_meta_boxes', array( $this->admin, 'add_review_meta_boxes' ) );
 		add_action( 'save_post_' . self::POST_TYPE, array( $this->admin, 'save_review_meta' ), 10, 2 );
-		add_action( 'admin_post_truspilot_import_reviews', array( $this->admin, 'handle_import_reviews' ) );
+		add_action( 'admin_post_bri_import_reviews', array( $this->admin, 'handle_import_reviews' ) );
 		add_filter( 'manage_' . self::POST_TYPE . '_posts_columns', array( $this->admin, 'review_columns' ) );
 		add_action( 'manage_' . self::POST_TYPE . '_posts_custom_column', array( $this->admin, 'render_review_column' ), 10, 2 );
 		add_action( 'save_post_' . self::POST_TYPE, array( $this->renderer, 'flush_review_cache' ) );
@@ -100,10 +100,10 @@ final class Truspilot_Review_Plugin {
 			self::POST_TYPE,
 			array(
 				'labels'          => array(
-					'name'          => __( 'Truspilot Reviews', 'truspilot-review' ),
-					'singular_name' => __( 'Truspilot Review', 'truspilot-review' ),
-					'add_new_item'  => __( 'Add Review', 'truspilot-review' ),
-					'edit_item'     => __( 'Edit Review', 'truspilot-review' ),
+					'name'          => __( 'BRI Reviews', 'business-review-importer' ),
+					'singular_name' => __( 'BRI Review', 'business-review-importer' ),
+					'add_new_item'  => __( 'Add Review', 'business-review-importer' ),
+					'edit_item'     => __( 'Edit Review', 'business-review-importer' ),
 				),
 				'public'          => false,
 				'show_ui'         => true,
@@ -124,36 +124,36 @@ final class Truspilot_Review_Plugin {
 	 */
 	public function register_assets() {
 		wp_register_style(
-			'truspilot-review-frontend',
-			TRUSPILOT_REVIEW_URL . 'assets/frontend.css',
+			'bri-frontend',
+			BRI_URL . 'assets/frontend.css',
 			array(),
-			TRUSPILOT_REVIEW_VERSION
+			BRI_VERSION
 		);
 
 		wp_register_script(
-			'truspilot-review-frontend',
-			TRUSPILOT_REVIEW_URL . 'assets/frontend.js',
+			'bri-frontend',
+			BRI_URL . 'assets/frontend.js',
 			array(),
-			TRUSPILOT_REVIEW_VERSION,
+			BRI_VERSION,
 			true
 		);
 
-		$block_asset_file = TRUSPILOT_REVIEW_DIR . 'build/index.asset.php';
+		$block_asset_file = BRI_DIR . 'build/index.asset.php';
 		if ( file_exists( $block_asset_file ) ) {
 			$block_asset = require $block_asset_file;
 			wp_register_script(
-				'truspilot-review-block',
-				TRUSPILOT_REVIEW_URL . 'build/index.js',
+				'bri-block',
+				BRI_URL . 'build/index.js',
 				$block_asset['dependencies'],
 				$block_asset['version'],
 				true
 			);
 		} else {
 			wp_register_script(
-				'truspilot-review-block',
-				TRUSPILOT_REVIEW_URL . 'block/index.js',
+				'bri-block',
+				BRI_URL . 'block/index.js',
 				array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-block-editor', 'wp-server-side-render' ),
-				TRUSPILOT_REVIEW_VERSION,
+				BRI_VERSION,
 				true
 			);
 		}
@@ -163,7 +163,7 @@ final class Truspilot_Review_Plugin {
 	 * Register shortcode aliases.
 	 */
 	public function register_shortcodes() {
-		add_shortcode( 'truspilot_reviews', array( $this->renderer, 'shortcode' ) );
+		add_shortcode( 'business_reviews', array( $this->renderer, 'shortcode' ) );
 		add_shortcode( 'trustpilot_reviews', array( $this->renderer, 'shortcode' ) );
 	}
 
@@ -176,7 +176,7 @@ final class Truspilot_Review_Plugin {
 		}
 
 		register_block_type(
-			TRUSPILOT_REVIEW_DIR . 'block',
+			BRI_DIR . 'block',
 			array(
 				'render_callback' => array( $this->renderer, 'render_block' ),
 			)
@@ -200,14 +200,14 @@ final class Truspilot_Review_Plugin {
 	 */
 	public function get_review_meta( $post_id ) {
 		return array(
-			'author'        => sanitize_text_field( get_post_meta( $post_id, '_truspilot_author', true ) ),
-			'rating'        => min( 5, max( 1, (float) get_post_meta( $post_id, '_truspilot_rating', true ) ) ),
-			'date'          => sanitize_text_field( get_post_meta( $post_id, '_truspilot_date', true ) ),
-			'source_url'    => esc_url_raw( get_post_meta( $post_id, '_truspilot_source_url', true ) ),
-			'country'       => sanitize_text_field( get_post_meta( $post_id, '_truspilot_country', true ) ),
-			'short_excerpt' => sanitize_textarea_field( get_post_meta( $post_id, '_truspilot_short_excerpt', true ) ),
-			'featured'      => (bool) get_post_meta( $post_id, '_truspilot_featured', true ),
-			'verified'      => (bool) get_post_meta( $post_id, '_truspilot_verified', true ),
+			'author'        => sanitize_text_field( get_post_meta( $post_id, '_bri_author', true ) ),
+			'rating'        => min( 5, max( 1, (float) get_post_meta( $post_id, '_bri_rating', true ) ) ),
+			'date'          => sanitize_text_field( get_post_meta( $post_id, '_bri_date', true ) ),
+			'source_url'    => esc_url_raw( get_post_meta( $post_id, '_bri_source_url', true ) ),
+			'country'       => sanitize_text_field( get_post_meta( $post_id, '_bri_country', true ) ),
+			'short_excerpt' => sanitize_textarea_field( get_post_meta( $post_id, '_bri_short_excerpt', true ) ),
+			'featured'      => (bool) get_post_meta( $post_id, '_bri_featured', true ),
+			'verified'      => (bool) get_post_meta( $post_id, '_bri_verified', true ),
 		);
 	}
 

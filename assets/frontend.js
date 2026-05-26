@@ -6,11 +6,11 @@
 			return;
 		}
 
-		var track = root.querySelector('.truspilot-review__track');
-		var slides = Array.prototype.slice.call(root.querySelectorAll('[data-truspilot-slide]'));
-		var prev = root.querySelector('[data-truspilot-prev]');
-		var next = root.querySelector('[data-truspilot-next]');
-		var dotsWrap = root.querySelector('[data-truspilot-dots]');
+		var track = root.querySelector('.bri-track');
+		var slides = Array.prototype.slice.call(root.querySelectorAll('[data-bri-slide]'));
+		var prev = root.querySelector('[data-bri-prev]');
+		var next = root.querySelector('[data-bri-next]');
+		var dotsWrap = root.querySelector('[data-bri-dots]');
 		var autoplay = root.dataset.autoplay === 'true';
 		var interval = parseInt(root.dataset.interval || '5500', 10);
 		var visible = parseInt(root.dataset.visible || '1', 10);
@@ -62,7 +62,7 @@
 				}
 				var dot = document.createElement('button');
 				dot.type = 'button';
-				dot.className = 'truspilot-review__dot';
+				dot.className = 'bri-dot';
 				dot.setAttribute('aria-label', 'Show review ' + (index + 1));
 				dot.addEventListener('click', function () {
 					goTo(index);
@@ -96,7 +96,7 @@
 	}
 
 	function init() {
-		Array.prototype.forEach.call(document.querySelectorAll('[data-truspilot-review]'), initCarousel);
+		Array.prototype.forEach.call(document.querySelectorAll('[data-bri]'), initCarousel);
 	}
 
 	if (document.readyState === 'loading') {

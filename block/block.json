@@ -1,12 +1,12 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "truspilot-review/reviews",
-	"title": "Truspilot Reviews",
+	"name": "business-review-importer/reviews",
+	"title": "Business Review Importer",
 	"category": "widgets",
 	"icon": "star-filled",
 	"description": "Display Trustpilot reviews as a responsive carousel, grid, or review wall.",
-	"textdomain": "truspilot-review",
+	"textdomain": "business-review-importer",
 	"attributes": {
 		"title": {
 			"type": "string",
@@ -61,6 +61,6 @@
 			"default": "vertical"
 		}
 	},
-	"editorScript": "truspilot-review-block",
-	"style": "truspilot-review-frontend"
+	"editorScript": "bri-block",
+	"style": "bri-frontend"
 }

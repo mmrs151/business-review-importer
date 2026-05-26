@@ -10,7 +10,7 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 
-registerBlockType('truspilot-review/reviews', {
+registerBlockType('business-review-importer/reviews', {
 	edit: (props) => {
 		const { attributes, setAttributes } = props;
 		const { layout } = attributes;
@@ -127,7 +127,7 @@ registerBlockType('truspilot-review/reviews', {
 				)
 			),
 			createElement(ServerSideRender, {
-				block: 'truspilot-review/reviews',
+				block: 'business-review-importer/reviews',
 				attributes: attributes,
 			})
 		);

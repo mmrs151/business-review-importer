@@ -1,8 +1,8 @@
-=== Truspilot Review Blocks ===
+=== Business Review Importer ===
 Contributors: psyntaxlabs
-Tags: reviews, testimonials, trustpilot, carousel, grid, wall, social proof
+Tags: reviews, testimonials, trustpilot, carousel.
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 2026.05.25
 License: GPL v2 or later
@@ -12,7 +12,7 @@ Display responsive customer reviews as a carousel, grid, list, or review wall us
 
 == Description ==
 
-Truspilot Review Blocks lets you import and display customer reviews on your WordPress site in beautiful, responsive layouts — without embedding Trustpilot's JavaScript or slowing down your pages.
+Business Review Importer lets you import and display customer reviews on your WordPress site in beautiful, responsive layouts — without embedding Trustpilot's JavaScript or slowing down your pages.
 
 == Features ==
 
@@ -42,16 +42,14 @@ Truspilot Review Blocks lets you import and display customer reviews on your Wor
 
 == Installation ==
 
-1. Upload the plugin folder to `/wp-content/plugins/` or search for "Truspilot Review Blocks" in the WordPress plugin directory.
+1. Upload the plugin folder to `/wp-content/plugins/` or search for "Business Review Importer" in the WordPress plugin directory.
 2. Activate the plugin.
-3. Go to **Truspilot Reviews > Settings & Import** and configure your Trustpilot profile details.
+3. Go to **Reviews > Settings & Import** and configure your Trustpilot profile details.
 4. Import reviews or add them manually, then place the shortcode or block on any page.
 
 == Shortcode ==
 
-`[truspilot_reviews]`
-
-Use the `[truspilot_reviews]` shortcode to display reviews on any page or post.
+`[business_reviews]`
 
 === Shortcode Attributes ===
 
@@ -71,11 +69,11 @@ Use the `[truspilot_reviews]` shortcode to display reviews on any page or post.
 
 === Examples ===
 
-`[truspilot_reviews count="3" layout="list"]`
-`[truspilot_reviews count="3" layout="list" orientation="horizontal"]`
-`[truspilot_reviews count="6" layout="carousel" carousel_visible="2"]` (Pro)
-`[truspilot_reviews count="12" layout="grid" grid_rows="3" grid_columns="4"]` (Pro)
-`[truspilot_reviews count="0" layout="wall" wall_style="noticeboard"]` (Pro)
+`[business_reviews count="3" layout="list"]`
+`[business_reviews count="3" layout="list" orientation="horizontal"]`
+`[business_reviews count="6" layout="carousel" carousel_visible="2"]` (Pro)
+`[business_reviews count="12" layout="grid" grid_rows="3" grid_columns="4"]` (Pro)
+`[business_reviews count="0" layout="wall" wall_style="noticeboard"]` (Pro)
 
 == Upgrade ==
 
@@ -85,7 +83,7 @@ The Pro version unlocks carousel, grid, wall layouts, Easy Browser Import, unlim
 
 = How do I import reviews? =
 
-Pro users can paste Trustpilot page source, JSON arrays, or plain review text directly in the Easy Browser Import section. Free users can add reviews one by one under Truspilot Reviews > Add Review.
+Pro users can paste Trustpilot page source, JSON arrays, or plain review text directly in the Easy Browser Import section. Free users can add reviews one by one under Reviews > Add New.
 
 = Do I need a Trustpilot account? =
 

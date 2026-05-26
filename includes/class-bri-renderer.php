@@ -2,7 +2,7 @@
 /**
  * Renderer class for displaying reviews as carousel, grid, or wall.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,27 +10,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Handles shortcode, block, and frontend rendering of review cards.
+ * Renders business reviews as carousel, grid, list, or wall.
  */
-final class Truspilot_Review_Renderer {
+final class BRI_Renderer {
 
-	const POST_TYPE     = 'truspilot_review';
+	const POST_TYPE     = 'bri_review';
 	const MAX_REVIEWS   = 48;
 	const DEFAULT_COUNT = 0;
 
 	/**
 	 * Plugin instance for accessing shared helpers.
 	 *
-	 * @var Truspilot_Review_Plugin
+	 * @var BRI_Plugin
 	 */
 	private $plugin;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Truspilot_Review_Plugin $plugin Main plugin instance.
+	 * @param BRI_Plugin $plugin Main plugin instance.
 	 */
-	public function __construct( Truspilot_Review_Plugin $plugin ) {
+	public function __construct( BRI_Plugin $plugin ) {
 		$this->plugin = $plugin;
 	}
 
@@ -49,7 +49,7 @@ final class Truspilot_Review_Renderer {
 				'autoplay'         => 'true',
 				'interval'         => 5500,
 				'full_page'        => 'false',
-				'title'            => $default_title ?: __( 'Parent Reviews', 'truspilot-review' ),
+				'title'            => $default_title ?: __( 'Parent Reviews', 'business-review-importer' ),
 				'min_rating'       => 1,
 				'featured_first'   => 'true',
 				'grid_rows'        => 3,
@@ -59,7 +59,7 @@ final class Truspilot_Review_Renderer {
 				'orientation'      => 'vertical',
 			),
 			(array) $atts,
-			'truspilot_reviews'
+			'business_reviews'
 		);
 
 		return $this->render_reviews( $atts );
@@ -82,7 +82,7 @@ final class Truspilot_Review_Renderer {
 				'autoplay'         => ! empty( $attributes['autoplay'] ) ? 'true' : 'false',
 				'interval'         => isset( $attributes['interval'] ) ? $attributes['interval'] : 5500,
 				'full_page'        => ! empty( $attributes['fullPage'] ) ? 'true' : 'false',
-				'title'            => isset( $attributes['title'] ) ? $attributes['title'] : ( $default_title ?: __( 'Parent Reviews', 'truspilot-review' ) ),
+				'title'            => isset( $attributes['title'] ) ? $attributes['title'] : ( $default_title ?: __( 'Parent Reviews', 'business-review-importer' ) ),
 				'min_rating'       => isset( $attributes['minRating'] ) ? $attributes['minRating'] : 1,
 				'featured_first'   => ! empty( $attributes['featuredFirst'] ) ? 'true' : 'false',
 				'grid_rows'        => isset( $attributes['gridRows'] ) ? $attributes['gridRows'] : 3,
@@ -116,7 +116,7 @@ final class Truspilot_Review_Renderer {
 		$orientation    = isset( $raw_atts['orientation'] ) ? $this->sanitize_choice( $raw_atts['orientation'], array( 'vertical', 'horizontal' ), 'vertical' ) : 'vertical';
 		$settings       = $this->plugin->get_settings();
 
-		if ( ! trp_fs()->can_use_premium_code() ) {
+		if ( ! bri_fs()->can_use_premium_code() ) {
 			$layout         = 'list';
 			$count          = $count > 0 ? min( $count, 3 ) : 3;
 			$autoplay       = false;
@@ -144,35 +144,35 @@ final class Truspilot_Review_Renderer {
 		}
 
 		if ( 0 === $review_count && ! $show_empty ) {
-			return current_user_can( 'edit_posts' ) ? '<p class="truspilot-review-notice">' . esc_html__( 'Add or import local reviews to display this block.', 'truspilot-review' ) . '</p>' : '';
+			return current_user_can( 'edit_posts' ) ? '<p class="bri-notice">' . esc_html__( 'Add or import local reviews to display this block.', 'business-review-importer' ) . '</p>' : '';
 		}
 
 		$grid_cells = ( 'grid' === $layout ) ? $grid_rows * $grid_columns : 0;
 
-		wp_enqueue_style( 'truspilot-review-frontend' );
-		wp_enqueue_script( 'truspilot-review-frontend' );
+		wp_enqueue_style( 'bri-frontend' );
+		wp_enqueue_script( 'bri-frontend' );
 
 		$classes = array(
-			'truspilot-review',
-			'truspilot-review--' . $layout,
-			$full_page ? 'truspilot-review--full' : '',
+			'business-review-importer',
+			'bri-' . $layout,
+			$full_page ? 'bri-full' : '',
 		);
 		if ( 'grid' === $layout ) {
-			$classes[] = 'truspilot-review--grid-cols-' . $grid_columns;
+			$classes[] = 'bri-grid-cols-' . $grid_columns;
 		}
 		if ( 'wall' === $layout ) {
-			$classes[] = 'truspilot-review--wall-' . $wall_style;
+			$classes[] = 'bri-wall-' . $wall_style;
 		}
 		if ( 'list' === $layout ) {
-			$classes[] = 'truspilot-review--list-' . $orientation;
+			$classes[] = 'bri-list-' . $orientation;
 		}
 
 		$section_style = '';
 		if ( $card_bg ) {
-			$section_style .= '--trp-card-bg:' . esc_attr( $card_bg ) . ';';
+			$section_style .= '--bri-card-bg:' . esc_attr( $card_bg ) . ';';
 		}
 		if ( 'carousel' === $layout && $carousel_visible > 1 ) {
-			$section_style .= '--trp-visible:' . (string) $carousel_visible . ';';
+			$section_style .= '--bri-visible:' . (string) $carousel_visible . ';';
 		}
 
 		ob_start();
@@ -180,7 +180,7 @@ final class Truspilot_Review_Renderer {
 		<section
 			class="<?php echo esc_attr( trim( implode( ' ', array_filter( $classes ) ) ) ); ?>"
 			<?php echo $section_style ? 'style="' . esc_attr( $section_style ) . '"' : ''; ?>
-			data-truspilot-review
+			data-bri
 			data-layout="<?php echo esc_attr( $layout ); ?>"
 			data-autoplay="<?php echo esc_attr( $autoplay ? 'true' : 'false' ); ?>"
 			data-interval="<?php echo esc_attr( (string) $interval ); ?>"
@@ -188,41 +188,41 @@ final class Truspilot_Review_Renderer {
 			data-visible="<?php echo esc_attr( (string) $carousel_visible ); ?>"
 			<?php endif; ?>
 		>
-			<div class="truspilot-review__header">
+			<div class="bri-header">
 				<div>
 					<?php if ( $title ) : ?>
-						<h2 class="truspilot-review__title"><?php echo esc_html( $title ); ?></h2>
+						<h2 class="bri-title"><?php echo esc_html( $title ); ?></h2>
 					<?php endif; ?>
 					<?php if ( ! empty( $settings['business_name'] ) ) : ?>
 						<?php if ( ! empty( $settings['public_url'] ) ) : ?>
-							<a class="truspilot-review__business" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank"><?php echo esc_html( $settings['business_name'] ); ?></a>
+							<a class="bri-business" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank"><?php echo esc_html( $settings['business_name'] ); ?></a>
 						<?php else : ?>
-							<p class="truspilot-review__business"><?php echo esc_html( $settings['business_name'] ); ?></p>
+							<p class="bri-business"><?php echo esc_html( $settings['business_name'] ); ?></p>
 						<?php endif; ?>
 					<?php endif; ?>
 				</div>
 				<?php if ( ! empty( $settings['public_url'] ) ) : ?>
-					<a class="truspilot-review__source" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank">
-						<?php echo esc_html__( 'View on Trustpilot', 'truspilot-review' ); ?>
+					<a class="bri-source" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank">
+						<?php echo esc_html__( 'View on Trustpilot', 'business-review-importer' ); ?>
 					</a>
 				<?php endif; ?>
 			</div>
 
 			<?php if ( $this->has_profile_summary( $settings ) ) : ?>
 				<?php if ( ! empty( $settings['public_url'] ) ) : ?>
-				<a class="truspilot-review__summary" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank">
+				<a class="bri-summary" href="<?php echo esc_url( $settings['public_url'] ); ?>" rel="nofollow noopener" target="_blank">
 				<?php else : ?>
-				<div class="truspilot-review__summary">
+				<div class="bri-summary">
 				<?php endif; ?>
-					<div class="truspilot-review__score">
-						<strong><?php echo esc_html( $settings['rating_label'] ? $settings['rating_label'] : __( 'Rated', 'truspilot-review' ) ); ?></strong>
+					<div class="bri-score">
+						<strong><?php echo esc_html( $settings['rating_label'] ? $settings['rating_label'] : __( 'Rated', 'business-review-importer' ) ); ?></strong>
 						<span><?php echo esc_html( $settings['trust_score'] ? number_format_i18n( (float) $settings['trust_score'], 1 ) : number_format_i18n( (float) $settings['star_rating'], 1 ) ); ?> / 5</span>
 					</div>
-					<div class="truspilot-review__rating" aria-label="<?php echo esc_attr__( 'Business star rating', 'truspilot-review' ); ?>">
+					<div class="bri-rating" aria-label="<?php echo esc_attr__( 'Business star rating', 'business-review-importer' ); ?>">
 						<?php echo wp_kses_post( $this->render_stars( $settings['star_rating'] ? $settings['star_rating'] : $settings['trust_score'] ) ); ?>
 					</div>
 					<?php if ( ! empty( $settings['total_reviews'] ) ) : ?>
-						<span class="truspilot-review__count"><?php echo esc_html( sprintf( _n( '%s review', '%s reviews', (int) $settings['total_reviews'], 'truspilot-review' ), number_format_i18n( (int) $settings['total_reviews'] ) ) ); ?></span>
+						<span class="bri-count"><?php echo esc_html( sprintf( /* translators: %s: number of reviews */ _n( '%s review', '%s reviews', (int) $settings['total_reviews'], 'business-review-importer' ), number_format_i18n( (int) $settings['total_reviews'] ) ) ); ?></span>
 					<?php endif; ?>
 				<?php if ( ! empty( $settings['public_url'] ) ) : ?>
 				</a>
@@ -231,26 +231,26 @@ final class Truspilot_Review_Renderer {
 				<?php endif; ?>
 			<?php endif; ?>
 
-			<div class="truspilot-review__viewport">
-				<div class="truspilot-review__track">
+			<div class="bri-viewport">
+				<div class="bri-track">
 					<?php if ( $show_empty && 'grid' !== $layout ) : ?>
-						<article class="truspilot-review__card truspilot-review__card--empty">
-							<div class="truspilot-review__empty">
+						<article class="bri-card bri-card--empty">
+							<div class="bri-empty">
 								<?php if ( $evaluate_url ) : ?>
-									<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></a>
+									<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'business-review-importer' ); ?></a>
 								<?php else : ?>
-									<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+									<p><?php esc_html_e( "Add yours here", 'business-review-importer' ); ?></p>
 								<?php endif; ?>
 							</div>
 						</article>
 					<?php elseif ( $show_empty && 'grid' === $layout ) : ?>
 						<?php for ( $i = 0; $i < $grid_cells; $i++ ) : ?>
-							<article class="truspilot-review__card truspilot-review__card--empty">
-								<div class="truspilot-review__empty">
+							<article class="bri-card bri-card--empty">
+								<div class="bri-empty">
 									<?php if ( $evaluate_url ) : ?>
-										<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></a>
+										<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'business-review-importer' ); ?></a>
 									<?php else : ?>
-										<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+										<p><?php esc_html_e( "Add yours here", 'business-review-importer' ); ?></p>
 									<?php endif; ?>
 								</div>
 							</article>
@@ -260,28 +260,28 @@ final class Truspilot_Review_Renderer {
 							<?php
 							$review_url = ! empty( $review['source_url'] ) ? $review['source_url'] : ( ! empty( $settings['public_url'] ) ? $settings['public_url'] : '' );
 							?>
-							<article class="truspilot-review__card<?php echo $review_url ? ' truspilot-review__card--linked' : ''; ?>" data-truspilot-slide="<?php echo esc_attr( (string) $index ); ?>">
+							<article class="bri-card<?php echo $review_url ? ' bri-card--linked' : ''; ?>" data-bri-slide="<?php echo esc_attr( (string) $index ); ?>">
 								<?php if ( $review_url ) : ?>
-								<a href="<?php echo esc_url( $review_url ); ?>" rel="nofollow noopener" target="_blank" class="truspilot-review__card-link">
+								<a href="<?php echo esc_url( $review_url ); ?>" rel="nofollow noopener" target="_blank" class="bri-card-link">
 								<?php endif; ?>
-								<div class="truspilot-review__rating" aria-label="<?php echo esc_attr( sprintf( __( '%s out of 5 stars', 'truspilot-review' ), $review['rating'] ) ); ?>">
+								<div class="bri-rating" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: star rating number */ __( '%s out of 5 stars', 'business-review-importer' ), $review['rating'] ) ); ?>">
 									<?php echo wp_kses_post( $this->render_stars( $review['rating'] ) ); ?>
 								</div>
 								<?php if ( ! empty( $review['title'] ) ) : ?>
-									<h3 class="truspilot-review__review-title"><?php echo esc_html( $review['title'] ); ?></h3>
+									<h3 class="bri-review-title"><?php echo esc_html( $review['title'] ); ?></h3>
 								<?php endif; ?>
-								<p class="truspilot-review__body"><?php echo esc_html( $review['body'] ); ?></p>
+								<p class="bri-body"><?php echo esc_html( $review['body'] ); ?></p>
 								<?php if ( ! empty( $review['verified'] ) || ! empty( $review['country'] ) ) : ?>
-									<div class="truspilot-review__badges">
+									<div class="bri-badges">
 										<?php if ( ! empty( $review['verified'] ) ) : ?>
-											<span><?php echo esc_html__( 'Verified', 'truspilot-review' ); ?></span>
+											<span><?php echo esc_html__( 'Verified', 'business-review-importer' ); ?></span>
 										<?php endif; ?>
 										<?php if ( ! empty( $review['country'] ) ) : ?>
 											<span><?php echo esc_html( $review['country'] ); ?></span>
 										<?php endif; ?>
 									</div>
 								<?php endif; ?>
-								<footer class="truspilot-review__meta">
+								<footer class="bri-meta">
 									<span><?php echo esc_html( $review['author'] ); ?></span>
 									<?php if ( ! empty( $review['date'] ) ) : ?>
 										<time datetime="<?php echo esc_attr( $review['date'] ); ?>"><?php echo esc_html( $this->format_review_date( $review['date'] ) ); ?></time>
@@ -294,12 +294,12 @@ final class Truspilot_Review_Renderer {
 						<?php endforeach; ?>
 						<?php if ( $grid_cells > 0 && $review_count < $grid_cells ) : ?>
 							<?php for ( $i = $review_count; $i < $grid_cells; $i++ ) : ?>
-								<article class="truspilot-review__card truspilot-review__card--empty">
-									<div class="truspilot-review__empty">
+								<article class="bri-card bri-card--empty">
+									<div class="bri-empty">
 										<?php if ( $evaluate_url ) : ?>
-											<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></a>
+											<a href="<?php echo esc_url( $evaluate_url ); ?>" rel="nofollow noopener" target="_blank"><?php esc_html_e( "Add yours here", 'business-review-importer' ); ?></a>
 										<?php else : ?>
-											<p><?php esc_html_e( "Add yours here", 'truspilot-review' ); ?></p>
+											<p><?php esc_html_e( "Add yours here", 'business-review-importer' ); ?></p>
 										<?php endif; ?>
 									</div>
 								</article>
@@ -310,10 +310,10 @@ final class Truspilot_Review_Renderer {
 			</div>
 
 			<?php if ( 'carousel' === $layout && $review_count > 1 && ! $show_empty ) : ?>
-				<div class="truspilot-review__controls" aria-label="<?php echo esc_attr__( 'Review carousel controls', 'truspilot-review' ); ?>">
-					<button class="truspilot-review__button" type="button" data-truspilot-prev aria-label="<?php echo esc_attr__( 'Previous review', 'truspilot-review' ); ?>">&lsaquo;</button>
-					<div class="truspilot-review__dots" data-truspilot-dots></div>
-					<button class="truspilot-review__button" type="button" data-truspilot-next aria-label="<?php echo esc_attr__( 'Next review', 'truspilot-review' ); ?>">&rsaquo;</button>
+				<div class="bri-controls" aria-label="<?php echo esc_attr__( 'Review carousel controls', 'business-review-importer' ); ?>">
+					<button class="bri-button" type="button" data-bri-prev aria-label="<?php echo esc_attr__( 'Previous review', 'business-review-importer' ); ?>">&lsaquo;</button>
+					<div class="bri-dots" data-bri-dots></div>
+					<button class="bri-button" type="button" data-bri-next aria-label="<?php echo esc_attr__( 'Next review', 'business-review-importer' ); ?>">&rsaquo;</button>
 				</div>
 			<?php endif; ?>
 		</section>
@@ -331,9 +331,9 @@ final class Truspilot_Review_Renderer {
 	 * @return array
 	 */
 	private function get_local_reviews( $count, $min_rating, $featured_first, $all_featured = false ) {
-		$cache_bust = (int) get_option( 'truspilot_review_cache_bust', 1 );
-		$cache_key  = 'truspilot_r_' . $cache_bust . '_' . md5( serialize( array( $count, $min_rating, $featured_first, $all_featured ) ) );
-		$cached     = wp_cache_get( $cache_key, 'truspilot_review' );
+		$cache_bust = (int) get_option( 'bri_cache_bust', 1 );
+		$cache_key  = 'bri_r_' . $cache_bust . '_' . md5( serialize( array( $count, $min_rating, $featured_first, $all_featured ) ) );
+		$cached     = wp_cache_get( $cache_key, 'bri_review' );
 
 		if ( false !== $cached ) {
 			return $cached;
@@ -341,7 +341,7 @@ final class Truspilot_Review_Renderer {
 
 		$meta_query = array(
 			array(
-				'key'     => '_truspilot_rating',
+				'key'     => '_bri_rating',
 				'value'   => $min_rating,
 				'type'    => 'NUMERIC',
 				'compare' => '>=',
@@ -352,7 +352,7 @@ final class Truspilot_Review_Renderer {
 			'post_type'      => self::POST_TYPE,
 			'post_status'    => 'publish',
 			'posts_per_page' => $all_featured ? -1 : ( 0 === $count ? 1 : $count ),
-			'meta_query'     => $meta_query,
+			'meta_query'     => $meta_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'orderby'        => $featured_first ? array(
 				'meta_value_num' => 'DESC',
 				'menu_order'     => 'ASC',
@@ -365,12 +365,12 @@ final class Truspilot_Review_Renderer {
 
 		if ( $all_featured ) {
 			$args['meta_query'][] = array(
-				'key'   => '_truspilot_featured',
+				'key'   => '_bri_featured',
 				'value' => '1',
 			);
 			unset( $args['meta_key'] );
 		} elseif ( $featured_first ) {
-			$args['meta_key'] = '_truspilot_featured';
+			$args['meta_key'] = '_bri_featured'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 		}
 
 		$query   = new WP_Query( $args );
@@ -382,7 +382,7 @@ final class Truspilot_Review_Renderer {
 			$reviews[] = array(
 				'title'      => get_the_title( $post ),
 				'body'       => wp_trim_words( sanitize_textarea_field( $body ), 44, '...' ),
-				'author'     => $meta['author'] ? $meta['author'] : __( 'Trustpilot reviewer', 'truspilot-review' ),
+				'author'     => $meta['author'] ? $meta['author'] : __( 'Trustpilot reviewer', 'business-review-importer' ),
 				'date'       => $meta['date'],
 				'rating'     => $meta['rating'],
 				'country'    => $meta['country'],
@@ -394,7 +394,7 @@ final class Truspilot_Review_Renderer {
 		wp_reset_postdata();
 
 		$result = array( 'reviews' => $reviews );
-		wp_cache_set( $cache_key, $result, 'truspilot_review', 3600 );
+		wp_cache_set( $cache_key, $result, 'bri_review', 3600 );
 
 		return $result;
 	}
@@ -406,7 +406,7 @@ final class Truspilot_Review_Renderer {
 	 */
 	public function flush_review_cache( $post_id ) {
 		if ( self::POST_TYPE === get_post_type( $post_id ) ) {
-			update_option( 'truspilot_review_cache_bust', (int) get_option( 'truspilot_review_cache_bust', 1 ) + 1 );
+			update_option( 'bri_cache_bust', (int) get_option( 'bri_cache_bust', 1 ) + 1 );
 		}
 	}
 
@@ -421,7 +421,7 @@ final class Truspilot_Review_Renderer {
 		$html = '';
 
 		for ( $i = 1; $i <= 5; $i++ ) {
-			$html .= '<span class="truspilot-review__star' . ( $i <= $full ? ' is-filled' : '' ) . '">&#9733;</span>';
+			$html .= '<span class="bri-star' . ( $i <= $full ? ' is-filled' : '' ) . '">&#9733;</span>';
 		}
 
 		return $html;

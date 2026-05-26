@@ -1,9 +1,13 @@
 <?php
 /**
- * Tests for Truspilot_Review_Importer class.
+ * Tests for BRI_Importer class.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +18,7 @@ class ImporterTest extends TestCase {
 	/**
 	 * Importer instance.
 	 *
-	 * @var Truspilot_Review_Importer
+	 * @var BRI_Importer
 	 */
 	private $importer;
 
@@ -23,8 +27,8 @@ class ImporterTest extends TestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$parser        = new Truspilot_Review_Parser();
-		$this->importer = new Truspilot_Review_Importer( $parser );
+		$parser        = new BRI_Parser();
+		$this->importer = new BRI_Importer( $parser );
 	}
 
 	/**
@@ -35,7 +39,7 @@ class ImporterTest extends TestCase {
 	 * @return mixed
 	 */
 	private function call_private( $name, array $args = array() ) {
-		$method = new ReflectionMethod( Truspilot_Review_Importer::class, $name );
+		$method = new ReflectionMethod( BRI_Importer::class, $name );
 		$method->setAccessible( true );
 
 		return $method->invokeArgs( $this->importer, $args );

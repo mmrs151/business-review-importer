@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Truspilot Review">
-	<description>WordPress coding standards for Truspilot Review Blocks</description>
+<ruleset name="Business Review Importer">
+	<description>WordPress coding standards for Business Review Importer</description>
 
 	<arg value="sp"/>
 	<arg name="basepath" value="."/>
@@ -18,7 +18,7 @@
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="truspilot-review"/>
+			<property name="text_domain" type="array" value="business-review-importer"/>
 		</properties>
 	</rule>
 </ruleset>

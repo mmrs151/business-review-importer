@@ -2,7 +2,7 @@
 /**
  * Scraper class for fetching reviews from Trustpilot public pages.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,23 +10,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Fetches and parses reviews from Trustpilot public profile pages.
+ * Scrapes content from the public Trustpilot business profile page.
  */
-final class Truspilot_Review_Scraper {
+final class BRI_Scraper {
 
 	/**
 	 * HTML parser instance.
 	 *
-	 * @var Truspilot_Review_Parser
+	 * @var BRI_Parser
 	 */
 	private $parser;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Truspilot_Review_Parser $parser HTML parser.
+	 * @param BRI_Parser $parser HTML parser.
 	 */
-	public function __construct( Truspilot_Review_Parser $parser ) {
+	public function __construct( BRI_Parser $parser ) {
 		$this->parser = $parser;
 	}
 
@@ -48,7 +48,7 @@ final class Truspilot_Review_Scraper {
 				array(
 					'timeout'     => 20,
 					'redirection' => 3,
-					'user-agent'  => 'Mozilla/5.0 (compatible; TruspilotReviewBlocks/' . TRUSPILOT_REVIEW_VERSION . '; ' . home_url( '/' ) . ')',
+					'user-agent'  => 'Mozilla/5.0 (compatible; BusinessReviewImporter/' . BRI_VERSION . '; ' . home_url( '/' ) . ')',
 					'headers'     => array(
 						'Accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 						'Accept-Language' => 'en-US,en;q=0.9',

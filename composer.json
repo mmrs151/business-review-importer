@@ -1,6 +1,6 @@
 {
-	"name": "truspilot-review/plugin",
-	"description": "Truspilot Review Blocks WordPress plugin",
+	"name": "business-review-importer/plugin",
+	"description": "Business Review Importer WordPress plugin",
 	"type": "wordpress-plugin",
 	"license": "proprietary",
 	"require": {

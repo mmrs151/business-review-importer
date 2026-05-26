@@ -1,4 +1,4 @@
-# Truspilot Review Blocks
+# Business Review Importer
 
 Display customer reviews as a responsive carousel, grid, list, or full-page review wall with a shortcode or Gutenberg block.
 
@@ -23,9 +23,9 @@ Display customer reviews as a responsive carousel, grid, list, or full-page revi
 
 ## Setup
 
-1. Go to **Truspilot Reviews > Settings & Import**.
+1. Go to **Reviews > Settings & Import**.
 2. Save the business profile summary from the public Trustpilot profile.
-3. Import reviews or add them manually under **Truspilot Reviews > Add Review**.
+3. Import reviews or add them manually under **Reviews > Add New**.
 4. Place a shortcode or block on any page.
 
 ## Easy Browser Import (Pro)
@@ -35,11 +35,11 @@ Pro users can paste Trustpilot page source, JSON arrays, or plain review text to
 ## Shortcode Examples
 
 ```text
-[truspilot_reviews count="3" layout="list"]
-[truspilot_reviews count="3" layout="list" orientation="horizontal"]
-[truspilot_reviews count="6" layout="carousel" carousel_visible="2"]       (Pro)
-[truspilot_reviews count="12" layout="grid" grid_rows="3" grid_columns="4"] (Pro)
-[truspilot_reviews count="0" layout="wall" wall_style="noticeboard"]       (Pro)
+[business_reviews count="3" layout="list"]
+[business_reviews count="3" layout="list" orientation="horizontal"]
+[business_reviews count="6" layout="carousel" carousel_visible="2"]       (Pro)
+[business_reviews count="12" layout="grid" grid_rows="3" grid_columns="4"] (Pro)
+[business_reviews count="0" layout="wall" wall_style="noticeboard"]       (Pro)
 ```
 
 ## Shortcode Attributes

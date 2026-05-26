@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Business Review Importer
- * Description: Import and display customer reviews from Trustpilot, Google, Feefo, Reviews.io, and more. Carousel, grid, list, and wall layouts.
+ * Description: Import and display Trustpilot customer reviews in carousel, grid, list, and wall layouts.
  * Version: 2026.05.25
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -23,6 +23,10 @@ define( 'BRI_FILE', __FILE__ );
 define( 'BRI_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BRI_URL', plugin_dir_url( __FILE__ ) );
 
+define( 'WP_FS__DEV_MODE', true );
+define( 'WP_FS__SKIP_EMAIL_ACTIVATION', true );
+define( 'WP_FS__business-review-importer_SECRET_KEY', 'sk_Xs(C;+k#3{J#R{2sN&p(JPta7*O5G' );
+
 if ( ! function_exists( 'bri_fs' ) ) {
 	/**
 	 * Freemius SDK helper.
@@ -37,20 +41,23 @@ if ( ! function_exists( 'bri_fs' ) ) {
 
 			$bri_fs = fs_dynamic_init(
 				array(
-					'id'             => '30507',
-					'slug'           => 'free-trust-pilot-review',
-					'type'           => 'plugin',
-					'public_key'     => 'pk_77f99941e85b3400e46d84503a0ed',
-					'is_premium'     => false,
-					'has_addons'     => false,
-					'has_paid_plans' => true,
-					'is_org_compliant' => true,
-					'trial'          => array(
+					'id'                  => '30507',
+					'slug'                => 'business-review-importer',
+					'premium_slug'        => 'premium-business-review-importer',
+					'type'                => 'plugin',
+					'public_key'          => 'pk_77f99941e85b3400e46d84503a0ed',
+					'is_premium'          => false,
+					'premium_suffix'      => 'Premium',
+					'has_premium_version' => true,
+					'has_addons'          => false,
+					'has_paid_plans'      => true,
+					'is_org_compliant'    => false,
+					'trial'               => array(
 						'days'               => 30,
 						'is_require_payment' => false,
 					),
-					'menu'           => array(
-						'account' => false,
+					'menu'                => array(
+						'slug'    => 'business-review-importer',
 						'support' => false,
 					),
 				)

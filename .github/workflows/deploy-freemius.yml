@@ -1,0 +1,40 @@
+name: Deploy to Freemius
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-dev --optimize-autoloader'
+
+      - name: Build plugin ZIP
+        run: |
+          mkdir -p build
+          rsync -a --exclude='.git' --exclude='.github' --exclude='node_modules' \
+            --exclude='tests' --exclude='phpunit.xml' --exclude='composer.json' \
+            --exclude='composer.lock' --exclude='package.json' --exclude='package-lock.json' \
+            --exclude='.gitignore' --exclude='*.md' \
+            . build/business-review-importer/
+          cd build && zip -r business-review-importer.zip business-review-importer/
+
+      - name: Deploy to Freemius
+        uses: buttonizer/freemius-deploy@v0.1.3
+        with:
+          file_name: business-review-importer.zip
+          release_mode: pending
+          version: ${{ github.ref_name }}
+          sandbox: false
+        env:
+          PUBLIC_KEY: ${{ secrets.FREEMIUS_PUBLIC_KEY }}
+          DEV_ID: ${{ secrets.FREEMIUS_DEV_ID }}
+          SECRET_KEY: ${{ secrets.FREEMIUS_SECRET_KEY }}
+          PLUGIN_SLUG: business-review-importer
+          PLUGIN_ID: '30507'

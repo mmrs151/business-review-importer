@@ -5,6 +5,10 @@
  * @package BusinessReviewImporter
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 // Stub WordPress functions used by the plugin.
 if ( ! function_exists( 'sanitize_key' ) ) {
 	function sanitize_key( $key ) {
@@ -56,7 +60,7 @@ if ( ! function_exists( 'esc_url' ) ) {
 
 if ( ! function_exists( 'wp_parse_url' ) ) {
 	function wp_parse_url( $url ) {
-		return parse_url( $url );
+		return parse_url( $url ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
 	}
 }
 
@@ -81,7 +85,7 @@ if ( ! function_exists( 'sanitize_textarea_field' ) ) {
 if ( ! function_exists( 'wp_strip_all_tags' ) ) {
 	function wp_strip_all_tags( $string, $remove_breaks = false ) {
 		$string = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $string );
-		$string = strip_tags( $string );
+		$string = strip_tags( $string ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags
 
 		if ( $remove_breaks ) {
 			$string = preg_replace( '/[\r\n\t ]+/', ' ', $string );
@@ -91,7 +95,9 @@ if ( ! function_exists( 'wp_strip_all_tags' ) ) {
 	}
 }
 
-define( 'ABSPATH', dirname( __DIR__ ) . '/' );
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', dirname( __DIR__ ) . '/' );
+}
 define( 'WPINC', 'wp-includes' );
 define( 'BRI_VERSION', '1.0.0' );
 define( 'BRI_DIR', dirname( __DIR__ ) . '/' );

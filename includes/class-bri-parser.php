@@ -2,7 +2,7 @@
 /**
  * Parser class for extracting reviews from Trustpilot page HTML.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Extracts review data from Trustpilot __NEXT_DATA__ and JSON-LD payloads.
  */
-final class Truspilot_Review_Parser {
+final class BRI_Parser {
 
 	/**
 	 * Parse public Trustpilot HTML for reviews.

@@ -2,7 +2,7 @@
 /**
  * Importer class for parsing and inserting reviews from various sources.
  *
- * @package TruspilotReview
+ * @package BusinessReviewImporter
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,25 +10,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Handles parsing of import text (HTML, JSON, plain text) and inserting reviews.
+ * Creates and manages local business reviews.
  */
-final class Truspilot_Review_Importer {
+final class BRI_Importer {
 
-	const POST_TYPE = 'truspilot_review';
+	const POST_TYPE = 'bri_review';
 
 	/**
 	 * HTML parser instance.
 	 *
-	 * @var Truspilot_Review_Parser
+	 * @var BRI_Parser
 	 */
 	private $parser;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Truspilot_Review_Parser $parser HTML parser.
+	 * @param BRI_Parser $parser HTML parser.
 	 */
-	public function __construct( Truspilot_Review_Parser $parser ) {
+	public function __construct( BRI_Parser $parser ) {
 		$this->parser = $parser;
 	}
 
@@ -86,8 +86,8 @@ final class Truspilot_Review_Importer {
 				'post_status'    => array( 'publish', 'draft', 'pending', 'private' ),
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
-				'meta_key'       => '_truspilot_import_hash',
-				'meta_value'     => $hash,
+				'meta_key'       => '_bri_import_hash', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => $hash, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			)
 		);
 
@@ -110,15 +110,15 @@ final class Truspilot_Review_Importer {
 		}
 
 		$meta = array(
-			'_truspilot_author'        => isset( $review['author'] ) ? sanitize_text_field( $review['author'] ) : '',
-			'_truspilot_rating'        => isset( $review['rating'] ) ? min( 5, max( 1, (float) $review['rating'] ) ) : 5,
-			'_truspilot_date'          => isset( $review['date'] ) ? sanitize_text_field( $review['date'] ) : '',
-			'_truspilot_source_url'    => isset( $review['source_url'] ) ? esc_url_raw( $review['source_url'] ) : '',
-			'_truspilot_country'       => isset( $review['country'] ) ? sanitize_text_field( $review['country'] ) : '',
-			'_truspilot_short_excerpt' => '',
-			'_truspilot_featured'      => 1,
-			'_truspilot_verified'      => ! empty( $review['verified'] ) ? 1 : 0,
-			'_truspilot_import_hash'   => $hash,
+			'_bri_author'        => isset( $review['author'] ) ? sanitize_text_field( $review['author'] ) : '',
+			'_bri_rating'        => isset( $review['rating'] ) ? min( 5, max( 1, (float) $review['rating'] ) ) : 5,
+			'_bri_date'          => isset( $review['date'] ) ? sanitize_text_field( $review['date'] ) : '',
+			'_bri_source_url'    => isset( $review['source_url'] ) ? esc_url_raw( $review['source_url'] ) : '',
+			'_bri_country'       => isset( $review['country'] ) ? sanitize_text_field( $review['country'] ) : '',
+			'_bri_short_excerpt' => '',
+			'_bri_featured'      => 1,
+			'_bri_verified'      => ! empty( $review['verified'] ) ? 1 : 0,
+			'_bri_import_hash'   => $hash,
 		);
 
 		foreach ( $meta as $key => $value ) {
