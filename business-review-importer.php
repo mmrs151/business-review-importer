@@ -78,7 +78,15 @@ if ( ! function_exists( 'bri_fs' ) ) {
 		return $bri_fs;
 	}
 
+	add_action( 'plugins_loaded', 'bri_fs_init' );
+}
+
+/**
+ * Initialize Freemius SDK on plugins_loaded.
+ */
+function bri_fs_init() {
 	bri_fs();
+	bri_fs()->add_action( 'after_uninstall', 'bri_fs_uninstall_cleanup' );
 	do_action( 'bri_fs_loaded' );
 }
 
@@ -120,10 +128,6 @@ function bri_fs_uninstall_cleanup() {
 	foreach ( $reviews as $review_id ) {
 		wp_delete_post( $review_id, true );
 	}
-}
-
-if ( function_exists( 'bri_fs' ) ) {
-	bri_fs()->add_action( 'after_uninstall', 'bri_fs_uninstall_cleanup' );
 }
 
 require_once BRI_DIR . 'includes/class-bri-parser.php';
