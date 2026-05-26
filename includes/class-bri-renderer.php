@@ -332,7 +332,7 @@ final class BRI_Renderer {
 	 */
 	private function get_local_reviews( $count, $min_rating, $featured_first, $all_featured = false ) {
 		$cache_bust = (int) get_option( 'bri_cache_bust', 1 );
-		$cache_key  = 'bri_r_' . $cache_bust . '_' . md5( serialize( array( $count, $min_rating, $featured_first, $all_featured ) ) );
+		$cache_key  = 'bri_r_' . $cache_bust . '_' . md5( wp_json_encode( array( $count, $min_rating, $featured_first, $all_featured ) ) );
 		$cached     = wp_cache_get( $cache_key, 'bri_review' );
 
 		if ( false !== $cached ) {

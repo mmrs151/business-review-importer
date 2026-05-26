@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Business Review Importer
  * Description: Import and display Trustpilot customer reviews in carousel, grid, list, and wall layouts.
- * Version: 2026.05.25
+ * Version: 2026.05.26
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: PsyntaxLabs
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ob_start();
 
-define( 'BRI_VERSION', '2026.05.25' );
+define( 'BRI_VERSION', '2026.05.26' );
 define( 'BRI_FILE', __FILE__ );
 define( 'BRI_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BRI_URL', plugin_dir_url( __FILE__ ) );
@@ -60,7 +60,6 @@ function bri_purge_freemius_cache() {
 	);
 }
 
-define( 'WP_FS__DEV_MODE', true );
 define( 'WP_FS__SKIP_EMAIL_ACTIVATION', true );
 define( 'WP_FS__business-review-importer_SECRET_KEY', 'sk_Xs(C;+k#3{J#R{2sN&p(JPta7*O5G' );
 

@@ -164,7 +164,6 @@ final class BRI_Plugin {
 	 */
 	public function register_shortcodes() {
 		add_shortcode( 'business_reviews', array( $this->renderer, 'shortcode' ) );
-		add_shortcode( 'trustpilot_reviews', array( $this->renderer, 'shortcode' ) );
 	}
 
 	/**

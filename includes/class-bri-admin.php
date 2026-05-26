@@ -514,7 +514,7 @@ final class BRI_Admin {
 
 		$meta = array(
 			'_bri_author'        => isset( $_POST['bri_reviewer_name'] ) ? sanitize_text_field( wp_unslash( $_POST['bri_reviewer_name'] ) ) : '',
-			'_bri_rating'        => isset( $_POST['bri_rating'] ) ? min( 5, max( 1, (float) $_POST['bri_rating'] ) ) : 5,
+			'_bri_rating'        => isset( $_POST['bri_rating'] ) ? min( 5, max( 1, (float) wp_unslash( $_POST['bri_rating'] ) ) ) : 5,
 			'_bri_date'          => isset( $_POST['bri_review_date'] ) ? sanitize_text_field( wp_unslash( $_POST['bri_review_date'] ) ) : '',
 			'_bri_source_url'    => isset( $_POST['bri_source_url'] ) ? esc_url_raw( wp_unslash( $_POST['bri_source_url'] ) ) : '',
 			'_bri_country'       => isset( $_POST['bri_country'] ) ? sanitize_text_field( wp_unslash( $_POST['bri_country'] ) ) : '',
