@@ -35,10 +35,11 @@ Business Review Importer lets you import and display customer reviews on your Wo
 
 == Screenshots ==
 
-1. Carousel layout with 3 visible cards, arrows, and dot navigation.
-2. Grid layout with uniform square cards.
-3. Wall noticeboard layout with post-it style tiles.
-4. Settings & Import page.
+1. Noticeboard Layout
+2. Grid/Wall Layout
+3. List Layout
+4. Carousel Layout
+5. Settings Page
 
 == Installation ==
 
