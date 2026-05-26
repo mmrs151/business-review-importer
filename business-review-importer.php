@@ -18,10 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( function_exists( 'wp_installing' ) && wp_installing() ) {
-	ob_start();
-	register_shutdown_function( 'ob_end_clean' );
-}
+ob_start();
 
 define( 'BRI_VERSION', '2026.05.25' );
 define( 'BRI_FILE', __FILE__ );
@@ -143,3 +140,7 @@ require_once BRI_DIR . 'includes/class-bri-admin.php';
 require_once BRI_DIR . 'includes/class-bri-plugin.php';
 
 add_action( 'plugins_loaded', array( 'BRI_Plugin', 'instance' ) );
+
+if ( ob_get_level() ) {
+	ob_end_clean();
+}
