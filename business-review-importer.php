@@ -18,8 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-ob_start();
-
 define( 'BRI_VERSION', '2026.05.25' );
 define( 'BRI_FILE', __FILE__ );
 define( 'BRI_DIR', plugin_dir_path( __FILE__ ) );
@@ -29,13 +27,36 @@ define( 'BRI_URL', plugin_dir_url( __FILE__ ) );
  * Purge stale Freemius cached data on activation.
  */
 function bri_activation_cleanup() {
-	delete_option( 'fs_accounts' );
-	delete_option( 'fs_business-review-importer' );
-	delete_option( 'fs_business_review_importer' );
-	delete_transient( 'fs_business-review-importer' );
-	delete_transient( 'fs_business_review_importer' );
+	bri_purge_freemius_cache();
 }
 register_activation_hook( __FILE__, 'bri_activation_cleanup' );
+
+/**
+ * Purge stale Freemius cache on version change (covers updates).
+ */
+function bri_check_version() {
+	$stored = get_option( 'bri_version', '' );
+	if ( $stored !== BRI_VERSION ) {
+		bri_purge_freemius_cache();
+		update_option( 'bri_version', BRI_VERSION );
+	}
+}
+add_action( 'admin_init', 'bri_check_version' );
+
+/**
+ * Purge stale Freemius cached data.
+ */
+function bri_purge_freemius_cache() {
+	global $wpdb;
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$wpdb->query(
+		$wpdb->prepare(
+			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+			$wpdb->esc_like( 'fs_' ) . '%',
+			$wpdb->esc_like( '_transient_fs_' ) . '%'
+		)
+	);
+}
 
 define( 'WP_FS__DEV_MODE', true );
 define( 'WP_FS__SKIP_EMAIL_ACTIVATION', true );
@@ -57,9 +78,10 @@ if ( ! function_exists( 'bri_fs' ) ) {
 				array(
 					'id'                  => '30507',
 					'slug'                => 'business-review-importer',
+					'premium_slug'        => 'business-review-importer',
 					'type'                => 'plugin',
 					'public_key'          => 'pk_77f99941e85b3400e46d84503a0ed',
-					'is_premium'          => false,
+					'is_premium'          => true,
 					'has_premium_version' => true,
 					'has_addons'          => false,
 					'has_paid_plans'      => true,
@@ -140,7 +162,3 @@ require_once BRI_DIR . 'includes/class-bri-admin.php';
 require_once BRI_DIR . 'includes/class-bri-plugin.php';
 
 add_action( 'plugins_loaded', array( 'BRI_Plugin', 'instance' ) );
-
-if ( ob_get_level() ) {
-	ob_end_clean();
-}
